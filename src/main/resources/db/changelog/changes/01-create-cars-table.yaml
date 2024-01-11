@@ -1,3 +1,0 @@
-databaseChangeLog:
-  - changeSet:
-      id: create-cars-table
