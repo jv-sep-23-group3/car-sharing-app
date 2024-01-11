@@ -16,16 +16,21 @@ public class Payment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(nullable = false)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private Status status;
+
     @Column(nullable = false)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private Type type;
+
     @Column(nullable = false)
     private String session;
+
     @Column(name = "session_id", nullable = false, unique = true)
     private String sessionId;
+
     @Column(nullable = false)
     private BigDecimal amount;
 
