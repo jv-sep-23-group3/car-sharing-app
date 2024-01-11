@@ -1,6 +1,5 @@
 package mate.sep23.group3.car.sharing.model;
 
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
