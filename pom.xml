@@ -93,6 +93,11 @@
             <artifactId>telegrambots</artifactId>
             <version>5.7.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.telegram</groupId>
+            <artifactId>telegrambots-spring-boot-starter</artifactId>
+            <version>4.9.1</version>
+        </dependency>
 
         <dependency>
             <groupId>javax.xml.bind</groupId>

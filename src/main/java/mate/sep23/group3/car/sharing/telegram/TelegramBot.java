@@ -1,5 +1,6 @@
 package mate.sep23.group3.car.sharing.telegram;
 
+import com.mysql.cj.Messages;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.config.BotConfig;
 import org.slf4j.Logger;
@@ -7,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -58,7 +60,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
         try {
             execute(sendMessage);
-            throw new TelegramApiException("asas");
         } catch (TelegramApiException e) {
             log.error("Error occurred: " + e.getMessage());
         }
