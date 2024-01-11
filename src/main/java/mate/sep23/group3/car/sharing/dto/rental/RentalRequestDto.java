@@ -8,5 +8,5 @@ import jakarta.validation.constraints.NotNull;
 public class RentalRequestDto {
     @NotNull
     @Positive
-    private Long id;
+    private Long carId;
 }
