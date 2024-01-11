@@ -4,5 +4,5 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 
 public interface PaymentService {
-    public void createCustomer(String email, String firstName, String lastName) throws StripeException;
+    void createCustomer(String email, String firstName, String lastName);
 }
