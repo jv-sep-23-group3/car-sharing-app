@@ -1,4 +1,4 @@
-package car.sharing;
+package mate.sep23.group3.car.sharing;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
