@@ -9,7 +9,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -39,10 +39,10 @@ public class Rental {
     private User userId;
 
     @Column(nullable = false)
-    private LocalDate rentalDate;
+    private LocalDateTime rentalDate;
     @Column(nullable = false)
-    private LocalDate returnDate;
-    private LocalDate actualReturnDate;
+    private LocalDateTime returnDate;
+    private LocalDateTime actualReturnDate;
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 }
