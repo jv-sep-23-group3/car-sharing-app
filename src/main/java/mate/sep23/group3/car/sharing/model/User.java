@@ -47,7 +47,7 @@ public class User implements UserDetails {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "chat_id", nullable = false)
+    @Column(name = "chat_id", unique = true)
     private Long chatId;
 
     @Column(name = "is_deleted", nullable = false)

@@ -38,7 +38,7 @@ databaseChangeLog:
                   name: chat_id
                   type: BIGINT
                   constraints:
-                    nullable: false
+                    unique: true
               - column:
                   name: is_deleted
                   type: BOOLEAN
