@@ -43,6 +43,6 @@ public class Rental {
     @Column(nullable = false)
     private LocalDate returnDate;
     private LocalDate actualReturnDate;
-    @Column(nullable = false)
+    @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted = false;
 }
