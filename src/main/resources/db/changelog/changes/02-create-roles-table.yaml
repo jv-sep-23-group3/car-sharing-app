@@ -1,0 +1,22 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-roles-table
+      author: voitenko
+      changes:
+        - createTable:
+            tableName: roles
+            columns:
+              - column:
+                  name: id
+                  type: BIGINT
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: role_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+                    checkConstraint: "LENGTH(role_name) <= 255"
