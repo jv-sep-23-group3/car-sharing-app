@@ -11,6 +11,7 @@ import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.service.RentalService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class RentalController {
     private final RentalService rentalService;
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Add a new rental")
@@ -39,6 +41,7 @@ public class RentalController {
         return rentalService.save(requestDto, user.getId());
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @GetMapping
     @Operation(summary = "Get list of rentals",
             description = "Get rentals by user ID and whether the rental is still active or not")
@@ -48,6 +51,7 @@ public class RentalController {
         return rentalService.getListByUserIdAndIsActiveStatus(userId, isActive, pageable);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @GetMapping("/{id}")
     @Operation(summary = "Get a specific rental by rental ID")
     public RentalResponseDto getSpecificRental(
@@ -58,6 +62,7 @@ public class RentalController {
         return rentalService.findByIdAndUserId(id, user.getId());
     }
 
+    @PreAuthorize("hasRole('MANAGER')")
     @PostMapping("/{id}/return")
     @Operation(summary = "Set actual return date to our rental")
     public RentalResponseDto homecoming(@PathVariable Long id) {

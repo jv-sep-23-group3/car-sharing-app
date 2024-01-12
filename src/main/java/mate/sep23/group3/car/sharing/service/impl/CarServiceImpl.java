@@ -39,6 +39,9 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarResponseDto update(Long id, CarRequestDto requestDto) {
+        carRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException("Can't find car by id: " + id)
+        );
         Car updatedCar = carMapper.toModel(requestDto);
         updatedCar.setId(id);
         return carMapper.toDto(carRepository.save(updatedCar));
