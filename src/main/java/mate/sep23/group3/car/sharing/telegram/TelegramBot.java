@@ -17,9 +17,9 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramBot extends TelegramLongPollingBot {
     private static final String SEND_EMAIL = "Sent an email for "
             + "authentication to receive notifications";
-    private static final String  EMAIL_OK= "Now you will receive notifications from CarSharing!";
-    private static final String  EMAIL_NOT_OK= "Email is invalid or not exist";
-    private static final String NOT_RECOGNIZED = "Sorry, but command was not recognized!";
+    private static final String EMAIL_OK = "Now you will receive notifications "
+            + "from CarSharing!";
+    private static final String EMAIL_NOT_OK = "Email is invalid or not exist";
     private static final Logger log
             = LoggerFactory.getLogger(TelegramBot.class);
     private final BotConfig botConfig;

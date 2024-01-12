@@ -14,11 +14,9 @@ import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Data
-@SQLRestriction("is_deleted=false")
 @Table(name = "rentals")
 public class Rental {
     @Id

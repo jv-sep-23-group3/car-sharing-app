@@ -1,5 +1,6 @@
 package mate.sep23.group3.car.sharing.repository;
 
+import java.util.List;
 import java.util.Optional;
 import mate.sep23.group3.car.sharing.model.Rental;
 import org.springframework.data.domain.Page;
@@ -15,7 +16,7 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     Page<Rental> findAllByUserIdAndIsActive(Long userId, Boolean isActive, Pageable pageable);
 
     @EntityGraph(attributePaths = {"car", "user"})
-    Page<Rental> findAllByIsActive(Boolean isActive, Pageable pageable);
+    List<Rental> findAllByIsActive(Boolean isActive);
 
     @EntityGraph(attributePaths = {"car", "user"})
     Optional<Rental> findByIdAndUserId(Long id, Long userId);
