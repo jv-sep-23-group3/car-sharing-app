@@ -15,12 +15,12 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
-@RequiredArgsConstructor
 @Component
+@RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    private static final String HEADER = "Authorization";
-    private static final String TOKEN_START = "Bearer ";
-    private static final int INDEX_FROM = 6;
+    private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
+    private static final String BEARER_TOKEN_START_SUBSTRING_PART = "Bearer ";
+    private static final int TOKEN_SUBSTRING_INDEX = 7;
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
 
@@ -31,8 +31,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             FilterChain filterChain
     ) throws ServletException, IOException {
         String token = getToken(request);
-
-        if (token != null && jwtUtil.isTokenValid(token)) {
+        if (token != null && jwtUtil.isValidToken(token)) {
             String username = jwtUtil.getUsername(token);
             UserDetails userDetails = userDetailsService.loadUserByUsername(username);
             Authentication authentication = new UsernamePasswordAuthenticationToken(
@@ -44,9 +43,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private String getToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader(HEADER);
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith(TOKEN_START)) {
-            return bearerToken.substring(INDEX_FROM);
+        String bearerToken = request.getHeader(AUTHORIZATION_HEADER_NAME);
+        if (StringUtils.hasText(bearerToken)
+                && bearerToken.startsWith(BEARER_TOKEN_START_SUBSTRING_PART)) {
+            return bearerToken.substring(TOKEN_SUBSTRING_INDEX);
         }
         return null;
     }

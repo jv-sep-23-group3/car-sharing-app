@@ -14,13 +14,15 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
-    private final Key secret;
 
+    private static final String TOKEN_IS_INVALID_MSG = "Token is invalid!";
     @Value("${jwt.expiration}")
-    private long expiration;
+    private Long expiration;
+
+    private Key secret;
 
     public JwtUtil(@Value("${jwt.secret}") String secretString) {
-        this.secret = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
+        secret = Keys.hmacShaKeyFor(secretString.getBytes(StandardCharsets.UTF_8));
     }
 
     public String generateToken(String username) {
@@ -32,16 +34,15 @@ public class JwtUtil {
                 .compact();
     }
 
-    public boolean isTokenValid(String token) {
+    public boolean isValidToken(String token) {
         try {
-            Jws<Claims> claimsJwts = Jwts.parserBuilder()
+            Jws<Claims> claimsJws = Jwts.parserBuilder()
                     .setSigningKey(secret)
                     .build()
                     .parseClaimsJws(token);
-
-            return !claimsJwts.getBody().getExpiration().before(new Date());
+            return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            return false;
+            throw new JwtException(TOKEN_IS_INVALID_MSG);
         }
     }
 
