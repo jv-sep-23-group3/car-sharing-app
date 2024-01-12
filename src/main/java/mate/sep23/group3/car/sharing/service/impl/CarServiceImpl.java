@@ -1,10 +1,10 @@
 package mate.sep23.group3.car.sharing.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.car.CarRequestDto;
 import mate.sep23.group3.car.sharing.dto.car.CarResponseDto;
+import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.mapper.CarMapper;
 import mate.sep23.group3.car.sharing.model.Car;
 import mate.sep23.group3.car.sharing.repository.CarRepository;
