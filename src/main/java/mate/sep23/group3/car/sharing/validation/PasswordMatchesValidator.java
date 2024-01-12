@@ -8,9 +8,9 @@ import mate.sep23.group3.car.sharing.dto.user.UserRegistrationRequestDto;
 public class PasswordMatchesValidator implements ConstraintValidator<FieldMatch,
         UserRegistrationRequestDto> {
     @Override
-    public boolean isValid(UserRegistrationRequestDto user,
+    public boolean isValid(UserRegistrationRequestDto requestDto,
                            ConstraintValidatorContext constraintValidatorContext) {
-        return user.getPassword() != null
-                && Objects.equals(user.getPassword(), user.getRepeatPassword());
+        return requestDto.getPassword() != null
+                && Objects.equals(requestDto.getPassword(), requestDto.getRepeatPassword());
     }
 }
