@@ -29,17 +29,19 @@ public class Rental {
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JoinColumn(name = "car_id", nullable = false)
-    private Car carId;
+    private Car car;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @EqualsAndHashCode.Exclude
     @ToString.Exclude
     @JoinColumn(name = "user_id", nullable = false)
-    private User userId;
+    private User user;
 
     @Column(nullable = false)
     private LocalDateTime rentalDate;
     @Column(nullable = false)
     private LocalDateTime returnDate;
     private LocalDateTime actualReturnDate;
+    @Column(nullable = false)
+    private Boolean isActive = true;
 }
