@@ -1,16 +1,15 @@
 package mate.sep23.group3.car.sharing.telegram;
 
-import com.mysql.cj.Messages;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.config.BotConfig;
+import mate.sep23.group3.car.sharing.model.User;
+import mate.sep23.group3.car.sharing.repository.UserRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 @RequiredArgsConstructor
@@ -18,12 +17,13 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 public class TelegramBot extends TelegramLongPollingBot {
     private static final String SEND_EMAIL = "Sent an email for "
             + "authentication to receive notifications";
-    private static final String  EMAIL_OK= "Now you will receive notifications";
+    private static final String  EMAIL_OK= "Now you will receive notifications from CarSharing!";
     private static final String  EMAIL_NOT_OK= "Email is invalid or not exist";
     private static final String NOT_RECOGNIZED = "Sorry, but command was not recognized!";
-    Logger log
+    private static final Logger log
             = LoggerFactory.getLogger(TelegramBot.class);
     private final BotConfig botConfig;
+    private final UserRepository userRepository;
 
     @Override
     public String getBotUsername() {
@@ -43,13 +43,14 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (messageText.equals("/start")) {
             sendMessage(chatId, SEND_EMAIL);
         } else {
-//            if (userRepository.findByEmail(messageText).isPresent()) {
-//                User user = userRepository.findByEmail(messageText).get().setChatId(chatId);
-//                userRepository.save(user);
-//                sendMessage(chatId, EMAIL_OK);
-//            } else {
+            if (userRepository.findByEmail(messageText).isPresent()) {
+                User user = userRepository.findByEmail(messageText).get();
+                user.setChatId(chatId);
+                userRepository.save(user);
+                sendMessage(chatId, EMAIL_OK);
+            } else {
                 sendMessage(chatId, EMAIL_NOT_OK);
-//            }
+            }
         }
     }
 
