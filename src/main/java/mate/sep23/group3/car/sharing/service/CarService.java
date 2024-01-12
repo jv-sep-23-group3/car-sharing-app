@@ -8,11 +8,11 @@ import org.springframework.data.domain.Pageable;
 public interface CarService {
     List<CarResponseDto> getAll(Pageable pageable);
 
-    CarResponseDto getCarById(Long id);
+    CarResponseDto getById(Long id);
 
-    CarResponseDto addCar(CarRequestDto requestDto);
+    CarResponseDto add(CarRequestDto requestDto);
 
-    CarResponseDto updateCar(Long id, CarRequestDto requestDto);
+    CarResponseDto update(Long id, CarRequestDto requestDto);
 
-    void deleteCar(Long id);
+    void delete(Long id);
 }

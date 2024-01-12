@@ -1,10 +1,10 @@
 package mate.sep23.group3.car.sharing.service.impl;
 
-import jakarta.persistence.EntityNotFoundException;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.car.CarRequestDto;
 import mate.sep23.group3.car.sharing.dto.car.CarResponseDto;
+import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.mapper.CarMapper;
 import mate.sep23.group3.car.sharing.model.Car;
 import mate.sep23.group3.car.sharing.repository.CarRepository;
@@ -26,26 +26,26 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public CarResponseDto getCarById(Long id) {
+    public CarResponseDto getById(Long id) {
         return carMapper.toDto(carRepository.findById(id).orElseThrow(
                 () -> new EntityNotFoundException("Can't find car by id: " + id)
         ));
     }
 
     @Override
-    public CarResponseDto addCar(CarRequestDto requestDto) {
-        return carMapper.toDto(carRepository.save(carMapper.toEntity(requestDto)));
+    public CarResponseDto add(CarRequestDto requestDto) {
+        return carMapper.toDto(carRepository.save(carMapper.toModel(requestDto)));
     }
 
     @Override
-    public CarResponseDto updateCar(Long id, CarRequestDto requestDto) {
-        Car updatedCar = carMapper.toEntity(requestDto);
+    public CarResponseDto update(Long id, CarRequestDto requestDto) {
+        Car updatedCar = carMapper.toModel(requestDto);
         updatedCar.setId(id);
         return carMapper.toDto(carRepository.save(updatedCar));
     }
 
     @Override
-    public void deleteCar(Long id) {
+    public void delete(Long id) {
         carRepository.deleteById(id);
     }
 }
