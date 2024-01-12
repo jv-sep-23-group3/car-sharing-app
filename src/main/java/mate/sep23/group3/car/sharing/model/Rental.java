@@ -14,12 +14,10 @@ import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
-import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Data
-@SQLDelete(sql = "UPDATE rentals SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted=false")
 @Table(name = "rentals")
 public class Rental {
@@ -44,6 +42,4 @@ public class Rental {
     @Column(nullable = false)
     private LocalDateTime returnDate;
     private LocalDateTime actualReturnDate;
-    @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted = false;
 }
