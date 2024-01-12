@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 import java.math.BigDecimal;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
@@ -41,6 +42,7 @@ public class Car {
     @Column(nullable = false)
     private BigDecimal dailyFee;
 
+    @ToString.Exclude
     @Column(nullable = false)
     private boolean isDeleted = false;
 
