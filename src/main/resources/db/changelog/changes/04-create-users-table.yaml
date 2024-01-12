@@ -1,10 +1,10 @@
 databaseChangeLog:
   - changeSet:
-      id: create-cars-table
-      author: denys_okhrymovych
+      id: create-users-table
+      author: voitenko
       changes:
         - createTable:
-            tableName: cars
+            tableName: users
             columns:
               - column:
                   name: id
@@ -12,32 +12,33 @@ databaseChangeLog:
                   autoIncrement: true
                   constraints:
                     primaryKey: true
-              - column:
-                  name: model
-                  type: VARCHAR(255)
-                  constraints:
                     nullable: false
               - column:
-                  name: brand
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: type
+                  name: email
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
                     unique: true
               - column:
-                  name: inventory
-                  type: INT
+                  name: password
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
-                  name: daily_fee
-                  type: DECIMAL(10, 2)
+                  name: first_name
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
+              - column:
+                  name: last_name
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: chat_id
+                  type: BIGINT
+                  constraints:
+                    unique: true
               - column:
                   name: is_deleted
                   type: BOOLEAN
