@@ -10,5 +10,5 @@ import org.mapstruct.Mapper;
 public interface CarMapper {
     CarResponseDto toDto(Car car);
 
-    Car toEntity(CarRequestDto requestDto);
+    Car toModel(CarRequestDto requestDto);
 }

@@ -38,33 +38,33 @@ public class CarController {
     @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
     @GetMapping("/{id}")
     @Operation(summary = "Get a car by id", description = "Get a car by id")
-    public CarResponseDto getCarById(@PathVariable Long id) {
-        return carService.getCarById(id);
+    public CarResponseDto getById(@PathVariable Long id) {
+        return carService.getById(id);
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Add a new car", description = "Add a new car")
-    public CarResponseDto addCar(@RequestBody @Valid CarRequestDto requestDto) {
-        return carService.addCar(requestDto);
+    public CarResponseDto add(@RequestBody @Valid CarRequestDto requestDto) {
+        return carService.add(requestDto);
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @PutMapping("/{id}")
     @Operation(summary = "Update a car", description = "Update a car")
-    public CarResponseDto updateCar(
+    public CarResponseDto update(
             @PathVariable Long id,
             @RequestBody @Valid CarRequestDto requestDto
     ) {
-        return carService.updateCar(id, requestDto);
+        return carService.update(id, requestDto);
     }
 
     @PreAuthorize("hasRole('MANAGER')")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete a car", description = "Delete a car")
-    public void deleteCar(@PathVariable Long id) {
-        carService.deleteCar(id);
+    public void delete(@PathVariable Long id) {
+        carService.delete(id);
     }
 }
