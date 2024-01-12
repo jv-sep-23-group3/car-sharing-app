@@ -1,3 +1,3 @@
 databaseChangeLog:
-  - include:
-      file: db/changelog/changes/06-create-payments-table.yaml
+  - includeAll:
+      path: db/changelog/changes

@@ -30,7 +30,8 @@ public class PaymentController {
     public PaymentUrlResponseDto createPaymentSession(
             Authentication authentication
     ) {
-        return null;
+        User user = (User) authentication.getPrincipal();
+        return paymentService.createPaymentSession(user.getId());
     }
 
     @GetMapping("/success")
