@@ -2,6 +2,8 @@ package mate.sep23.group3.car.sharing.service.impl;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
+import com.stripe.model.Price;
+import com.stripe.model.Product;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.annotation.PostConstruct;
@@ -37,9 +39,12 @@ import org.springframework.stereotype.Service;
 public class PaymentServiceImpl implements PaymentService {
     private static final String DEFAULT_CURRENCY = "USD";
     private static final String CAR_RENT_TAX_CODE = "txcd_20030000";
-    private static final String SUCCESS_URL_TEMPLATE = "http://localhost:8080/api/payment/success?sessionId=%s";
-    private static final String CANCEL_URL_TEMPLATE = "http://localhost:8080/api/payment/cancel?sessionId=%s";
+    private static final String SUCCESS_URL_TEMPLATE
+            = "http://localhost:8080/api/payment/success?sessionId={CHECKOUT_SESSION_ID}";
+    private static final String CANCEL_URL_TEMPLATE
+            = "http://localhost:8080/api/payment/cancel?sessionId={CHECKOUT_SESSION_ID}";
     private static final Long DEFAULT_QUANTITY = 1L;
+
     private final PaymentFactory paymentFactory;
     private final List<RoleHandler> roleHandlers;
     private final PaymentRepository paymentRepository;
@@ -83,8 +88,6 @@ public class PaymentServiceImpl implements PaymentService {
         BigDecimal amount = typeHandler.calculateAmount(rental);
 
         Session session = createSession(amount, rental.getCar());
-        session.setSuccessUrl(String.format(SUCCESS_URL_TEMPLATE, session.getId()));
-        session.setCancelUrl(String.format(CANCEL_URL_TEMPLATE, session.getId()));
 
         Payment payment = paymentMapper.toModel(paymentRequestDto)
                 .setStatus(Payment.Status.PENDING)
@@ -101,7 +104,10 @@ public class PaymentServiceImpl implements PaymentService {
             BigDecimal amount, Car car
     ) {
         SessionCreateParams createParams = SessionCreateParams.builder()
+                .setSuccessUrl(SUCCESS_URL_TEMPLATE)
+                .setCancelUrl(CANCEL_URL_TEMPLATE)
                 .addLineItem(createLineItem(amount, car))
+                .setMode(SessionCreateParams.Mode.PAYMENT)
                 .build();
 
         try {
@@ -114,6 +120,8 @@ public class PaymentServiceImpl implements PaymentService {
     private SessionCreateParams.LineItem createLineItem(
             BigDecimal amount, Car car
     ) {
+
+
         return SessionCreateParams.LineItem.builder()
                 .setPriceData(createPriceData(amount, car))
                 .setQuantity(DEFAULT_QUANTITY)

@@ -1,0 +1,13 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-datatype-for-payments-table
+      author: Bohdan Hovorukha
+      changes:
+        - modifyDataType:
+            tableName: payments
+            columnName: session
+            newDataType: varchar(600)
+        - modifyDataType:
+            tableName: payments
+            columnName: session_id
+            newDataType: varchar(600)

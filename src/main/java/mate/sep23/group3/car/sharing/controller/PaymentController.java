@@ -7,6 +7,7 @@ import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
 import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.service.PaymentService;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,6 +26,7 @@ public class PaymentController {
         return paymentService.getAll(user.getId(), pageable);
     }
 
+    @PreAuthorize("hasRole('CUSTOMER')")
     @PostMapping
     public PaymentResponseDto createPaymentSession(
             @RequestBody PaymentRequestDto paymentRequestDto
@@ -33,7 +35,9 @@ public class PaymentController {
     }
 
     @GetMapping("/success")
-    public void checkSuccessfulPayment() {
+    public void checkSuccessfulPayment(
+            @RequestParam("sessionId") String sessionId
+    ) {
 
     }
 
