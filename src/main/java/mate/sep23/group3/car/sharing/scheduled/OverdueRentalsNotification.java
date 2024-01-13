@@ -7,7 +7,6 @@ import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.model.Rental;
 import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.telegram.TelegramBot;
-import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
