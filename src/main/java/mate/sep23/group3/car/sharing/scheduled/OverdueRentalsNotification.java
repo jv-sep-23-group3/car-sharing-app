@@ -17,6 +17,10 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class OverdueRentalsNotification {
     private static final int THREE_HOURS = 3;
+    private static final String INDENTATION = " ";
+    private static final String COMA = ",";
+    private static final String DAILY_FEE = "daily fee: ";
+    private static final String RETURNED_DATE = "Returned date :";
     @Value("${admin.chat.id}")
     private Long adminChatId;
     private final TelegramBot telegramBot;
@@ -29,8 +33,11 @@ public class OverdueRentalsNotification {
         for (Rental rental : rentals) {
             if (ChronoUnit.HOURS.between(LocalDateTime.now(),
                     rental.getReturnDate()) < THREE_HOURS) {
-                String message = rental.getCar() + System.lineSeparator()
-                        + "Returned date :" + rental.getReturnDate();
+                String message = rental.getCar().getBrand() + INDENTATION
+                        + rental.getCar().getModel() + COMA + INDENTATION
+                        + DAILY_FEE + rental.getCar().getDailyFee()
+                        + System.lineSeparator()
+                        + RETURNED_DATE + rental.getReturnDate();
 
                 messageForManagers.append(rental.getUser().getEmail())
                         .append(System.lineSeparator()).append(message)
