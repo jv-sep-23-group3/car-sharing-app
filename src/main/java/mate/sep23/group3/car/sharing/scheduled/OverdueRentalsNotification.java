@@ -20,6 +20,7 @@ public class OverdueRentalsNotification {
     private static final String INDENTATION = " ";
     private static final String COMA = ",";
     private static final String DAILY_FEE = "daily fee: ";
+    private static final String RETURNED_DATE = "Returned date :";
     @Value("${admin.chat.id}")
     private Long adminChatId;
     private final TelegramBot telegramBot;
@@ -36,7 +37,7 @@ public class OverdueRentalsNotification {
                         + rental.getCar().getModel() + COMA + INDENTATION
                         + DAILY_FEE + rental.getCar().getDailyFee()
                         + System.lineSeparator()
-                        + "Returned date :" + rental.getReturnDate();
+                        + RETURNED_DATE + rental.getReturnDate();
 
                 messageForManagers.append(rental.getUser().getEmail())
                         .append(System.lineSeparator()).append(message)
