@@ -28,14 +28,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class CarController {
     private final CarService carService;
 
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER')")
     @GetMapping
     @Operation(summary = "Get all cars", description = "Get a list of all available cars")
     public List<CarResponseDto> getAll(Pageable pageable) {
         return carService.getAll(pageable);
     }
 
-    @PreAuthorize("hasAnyAuthority('CUSTOMER', 'MANAGER')")
+    @PreAuthorize("hasAnyRole('CUSTOMER', 'MANAGER')")
     @GetMapping("/{id}")
     @Operation(summary = "Get a car by id", description = "Get a car by id")
     public CarResponseDto getById(@PathVariable Long id) {

@@ -29,10 +29,10 @@ public class Car {
     @Column(nullable = false)
     private String model;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String brand;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false)
     @JdbcTypeCode(SqlTypes.VARCHAR)
     private Type type;
 
