@@ -40,9 +40,9 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String DEFAULT_CURRENCY = "USD";
     private static final String CAR_RENT_TAX_CODE = "txcd_20030000";
     private static final String SUCCESS_URL_TEMPLATE
-            = "http://localhost:8080/api/payment/success?sessionId={CHECKOUT_SESSION_ID}";
+            = "http://localhost:8080/api/payments/success?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_URL_TEMPLATE
-            = "http://localhost:8080/api/payment/cancel?sessionId={CHECKOUT_SESSION_ID}";
+            = "http://localhost:8080/api/payments/cancel?sessionId={CHECKOUT_SESSION_ID}";
     private static final Long DEFAULT_QUANTITY = 1L;
 
     private final PaymentFactory paymentFactory;

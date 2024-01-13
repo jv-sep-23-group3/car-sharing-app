@@ -30,19 +30,21 @@ public class PaymentController {
     @PostMapping
     public PaymentResponseDto createPaymentSession(
             @RequestBody PaymentRequestDto paymentRequestDto
-            ) {
+    ) {
         return paymentService.createPaymentSession(paymentRequestDto);
     }
 
     @GetMapping("/success")
-    public void checkSuccessfulPayment(
+    public String checkSuccessfulPayment(
             @RequestParam("sessionId") String sessionId
     ) {
-
+        return null;
     }
 
     @GetMapping("/cancel")
-    public void pausePayment() {
-
+    public String pausePayment(
+            @RequestParam("sessionId") String sessionId
+    ) {
+        return null;
     }
 }
