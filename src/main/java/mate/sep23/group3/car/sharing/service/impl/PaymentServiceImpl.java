@@ -5,9 +5,15 @@ import com.stripe.exception.StripeException;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.annotation.PostConstruct;
+import java.math.BigDecimal;
+import java.time.temporal.ChronoUnit;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+
 import lombok.RequiredArgsConstructor;
+import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
-import mate.sep23.group3.car.sharing.dto.payment.PaymentUrlResponseDto;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.exception.StripeProcessingException;
 import mate.sep23.group3.car.sharing.mapper.PaymentMapper;
@@ -20,22 +26,21 @@ import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.repository.UserRepository;
 import mate.sep23.group3.car.sharing.service.PaymentService;
 import mate.sep23.group3.car.sharing.strategy.payment.RoleHandler;
+import mate.sep23.group3.car.sharing.strategy.payment.TypeHandler;
+import mate.sep23.group3.car.sharing.strategy.payment.handlers.type.PaymentFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.math.BigDecimal;
-import java.time.temporal.ChronoUnit;
-import java.util.Collection;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private static final String DEFAULT_CURRENCY = "USD";
     private static final String CAR_RENT_TAX_CODE = "txcd_20030000";
+    private static final String SUCCESS_URL_TEMPLATE = "http://localhost:8080/api/payment/success?sessionId=%s";
+    private static final String CANCEL_URL_TEMPLATE = "http://localhost:8080/api/payment/cancel?sessionId=%s";
     private static final Long DEFAULT_QUANTITY = 1L;
-
+    private final PaymentFactory paymentFactory;
     private final List<RoleHandler> roleHandlers;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
@@ -68,59 +73,31 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Override
-    public PaymentUrlResponseDto createPaymentSession(Long userId) {
-        Rental usersActiveRental = rentalRepository.findByUserIdAndIsActiveTrue(userId).orElseThrow(
-                () -> new EntityNotFoundException("Can't get rental with user id: " + userId)
+    public PaymentResponseDto createPaymentSession(PaymentRequestDto paymentRequestDto) {
+        Rental rental = rentalRepository.findById(paymentRequestDto.getRentalId()).orElseThrow(
+                () -> new EntityNotFoundException("Can't get rental with id: "
+                        + paymentRequestDto.getRentalId())
         );
 
-        Payment payment = createPayment(usersActiveRental);
-        Session session = createPaymentSession(payment.getAmount(), usersActiveRental.getCar());
+        TypeHandler typeHandler = paymentFactory.getTypeHandler(paymentRequestDto.getType().name());
+        BigDecimal amount = typeHandler.calculateAmount(rental);
 
-        session.setSuccessUrl(String.format(
-                "http://localhost:8080/api/payments/success?session_id=%s",
-                session.getId())
-        );
+        Session session = createSession(amount, rental.getCar());
+        session.setSuccessUrl(String.format(SUCCESS_URL_TEMPLATE, session.getId()));
+        session.setCancelUrl(String.format(CANCEL_URL_TEMPLATE, session.getId()));
 
-        session.setCancelUrl(String.format(
-                "http://localhost:8080/api/payments/cancel?session_id=%s",
-                session.getId())
-        );
-
-        payment.setSession(session.getUrl());
-        payment.setSessionId(session.getId());
-
-        paymentRepository.save(payment);
-
-        return paymentMapper.toDto(session);
-    }
-
-    private Payment createPayment(Rental rental) {
-        Payment payment = new Payment()
+        Payment payment = paymentMapper.toModel(paymentRequestDto)
                 .setStatus(Payment.Status.PENDING)
-                .setRental(rental);
+                .setType(paymentRequestDto.getType())
+                .setRental(rental)
+                .setSession(session.getUrl())
+                .setSessionId(session.getId())
+                .setAmount(amount);
 
-        BigDecimal amount = calculateBasicPrice(rental);
-
-        if (rental.getActualReturnDate().isAfter(rental.getReturnDate())) {
-            payment.setType(Payment.Type.FINE);
-            amount = amount.multiply(BigDecimal.valueOf(1.5));
-        } else {
-            payment.setType(Payment.Type.PAYMENT);
-        }
-
-        return payment.setAmount(amount);
+        return paymentMapper.toDto(paymentRepository.save(payment));
     }
 
-    private BigDecimal calculateBasicPrice(Rental rental) {
-        return rental.getCar().getDailyFee().multiply(
-                BigDecimal.valueOf(ChronoUnit.DAYS.between(
-                        rental.getRentalDate(),
-                        rental.getActualReturnDate())
-                )
-        );
-    }
-
-    private Session createPaymentSession(
+    private Session createSession(
             BigDecimal amount, Car car
     ) {
         SessionCreateParams createParams = SessionCreateParams.builder()

@@ -1,14 +1,20 @@
 package mate.sep23.group3.car.sharing.model;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.math.BigDecimal;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import lombok.experimental.Accessors;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
-
-import java.math.BigDecimal;
 
 @Data
 @Entity
@@ -33,7 +39,7 @@ public class Payment {
     @JoinColumn(name = "rental_id", nullable = false)
     private Rental rental;
 
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String session;
 
     @Column(name = "session_id", nullable = false, unique = true)

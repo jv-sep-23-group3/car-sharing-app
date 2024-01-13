@@ -24,14 +24,23 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
+                  name: rental_id
+                  type: bigint
+                  constraints:
+                    foreignKeyName: fk_rental_id_rental_id
+                    references: rentals(id)
+                    nullable: false
+              - column:
                   name: session
                   type: varchar(255)
                   constraints:
+                    unique: true
                     nullable: false
               - column:
                   name: session_id
                   type: varchar(255)
                   constraints:
+                    unique: true
                     nullable: false
               - column:
                   name: amount

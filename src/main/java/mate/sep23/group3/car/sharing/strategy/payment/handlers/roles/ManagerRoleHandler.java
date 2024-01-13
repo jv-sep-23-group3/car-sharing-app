@@ -1,6 +1,6 @@
-package mate.sep23.group3.car.sharing.strategy.payment.handlers;
+package mate.sep23.group3.car.sharing.strategy.payment.handlers.roles;
 
-import lombok.Data;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.model.Payment;
 import mate.sep23.group3.car.sharing.model.Role;
@@ -8,8 +8,6 @@ import mate.sep23.group3.car.sharing.repository.PaymentRepository;
 import mate.sep23.group3.car.sharing.strategy.payment.RoleHandler;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Component;
-
-import java.util.List;
 
 @Component
 @RequiredArgsConstructor

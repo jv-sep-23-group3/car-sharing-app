@@ -1,15 +1,14 @@
 package mate.sep23.group3.car.sharing.controller;
 
+import java.util.List;
 import lombok.RequiredArgsConstructor;
+import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
-import mate.sep23.group3.car.sharing.dto.payment.PaymentUrlResponseDto;
 import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.service.PaymentService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/payments")
@@ -27,11 +26,10 @@ public class PaymentController {
     }
 
     @PostMapping
-    public PaymentUrlResponseDto createPaymentSession(
-            Authentication authentication
-    ) {
-        User user = (User) authentication.getPrincipal();
-        return paymentService.createPaymentSession(user.getId());
+    public PaymentResponseDto createPaymentSession(
+            @RequestBody PaymentRequestDto paymentRequestDto
+            ) {
+        return paymentService.createPaymentSession(paymentRequestDto);
     }
 
     @GetMapping("/success")

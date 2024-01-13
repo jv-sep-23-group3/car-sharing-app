@@ -24,5 +24,5 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
     List<Rental> findAllByUserId(Long userId);
 
     @EntityGraph(attributePaths = {"car", "user"})
-    Optional<Rental> findByUserIdAndIsActiveTrue(Long userId);
+    Optional<Rental> findById(Long id);
 }
