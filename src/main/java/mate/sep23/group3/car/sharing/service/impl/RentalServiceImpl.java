@@ -1,11 +1,14 @@
 package mate.sep23.group3.car.sharing.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.rental.RentalRequestDto;
 import mate.sep23.group3.car.sharing.dto.rental.RentalResponseDto;
+import mate.sep23.group3.car.sharing.exception.CarInventoryException;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
+import mate.sep23.group3.car.sharing.exception.RentalReturnException;
 import mate.sep23.group3.car.sharing.mapper.RentalMapper;
 import mate.sep23.group3.car.sharing.model.Car;
 import mate.sep23.group3.car.sharing.model.Rental;
@@ -13,6 +16,7 @@ import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.repository.CarRepository;
 import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.repository.UserRepository;
+import mate.sep23.group3.car.sharing.service.NotificationService;
 import mate.sep23.group3.car.sharing.service.RentalService;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -29,11 +33,14 @@ public class RentalServiceImpl implements RentalService {
             "Can't find user by ID: ";
     private static final String CAR_INVENTORY_IS_EMPTY_MESSAGE =
             "Sorry, this car model isn't currently available!";
+    private static final String CAN_NOT_RETURN_CAR_MESSAGE =
+            "We cannot return a car that has actually already returned.";
 
     private final RentalRepository rentalRepository;
     private final RentalMapper rentalMapper;
     private final CarRepository carRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -76,19 +83,17 @@ public class RentalServiceImpl implements RentalService {
         );
         if (rental.getActualReturnDate() == null) {
             rental.setActualReturnDate(LocalDateTime.now());
+            Car car = rental.getCar();
+            car.setInventory(car.getInventory() + 1);
+            rental.setIsActive(false);
+            carRepository.save(car);
+        } else {
+            throw new RentalReturnException(CAN_NOT_RETURN_CAR_MESSAGE);
         }
-        Car car = rental.getCar();
-        car.setInventory(car.getInventory() + 1);
-        rental.setIsActive(false);
-        carRepository.save(car);
         return rentalMapper.toDto(rentalRepository.save(rental));
     }
 
     private Rental setUpRental(RentalRequestDto requestDto, Long userId) {
-        Rental rental = new Rental();
-        rental.setRentalDate(LocalDateTime.now());
-        rental.setReturnDate(requestDto.getReturnDate());
-
         Car car = carRepository.findById(requestDto.getCarId()).orElseThrow(
                 () -> new EntityNotFoundException(
                         CAN_NOT_FIND_CAR_BY_ID_MESSAGE + requestDto.getCarId()
@@ -97,6 +102,9 @@ public class RentalServiceImpl implements RentalService {
 
         int carInventory = car.getInventory();
         if (carInventory > 0) {
+            Rental rental = new Rental();
+            rental.setRentalDate(LocalDateTime.now());
+            rental.setReturnDate(requestDto.getReturnDate());
             car.setInventory(carInventory - 1);
             rental.setCar(car);
 
@@ -106,9 +114,25 @@ public class RentalServiceImpl implements RentalService {
 
             rental.setUser(user);
             rental.setIsActive(true);
+
+            notificationService.sendNotification(user.getChatId(), formatMessage(rental));
+
             return rental;
         } else {
-            throw new RuntimeException(CAR_INVENTORY_IS_EMPTY_MESSAGE);
+            throw new CarInventoryException(CAR_INVENTORY_IS_EMPTY_MESSAGE);
         }
+    }
+
+    private String formatMessage(Rental rental) {
+        return String.format(
+                "✅Rental succeed! You have successfully submitted your application to rent a "
+                        + rental.getCar().getBrand() + " "
+                        + rental.getCar().getModel() + "🚗"
+                        + System.lineSeparator()
+                        + System.lineSeparator()
+                        + "You'll need to get car back on "
+                        + rental.getReturnDate()
+                        .format(DateTimeFormatter.ofPattern("d MMMM yyyy h:mm a")) + "⏳"
+        );
     }
 }
