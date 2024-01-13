@@ -74,7 +74,7 @@ public class RentalServiceImpl implements RentalService {
                         CAN_NOT_FIND_RENTAL_BY_ID_MESSAGE + id
                 )
         );
-        if (rental.getRentalDate() == null) {
+        if (rental.getActualReturnDate() == null) {
             rental.setActualReturnDate(LocalDateTime.now());
         }
         Car car = rental.getCar();

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
+    private static final String CAN_NOT_FIND_CAR_BY_ID_MESSAGE = "Can't find car by id: ";
     private final CarRepository carRepository;
     private final CarMapper carMapper;
 
@@ -26,26 +27,29 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public CarResponseDto getCarById(Long id) {
+    public CarResponseDto getById(Long id) {
         return carMapper.toDto(carRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException("Can't find car by id: " + id)
+                () -> new EntityNotFoundException(CAN_NOT_FIND_CAR_BY_ID_MESSAGE + id)
         ));
     }
 
     @Override
-    public CarResponseDto addCar(CarRequestDto requestDto) {
-        return carMapper.toDto(carRepository.save(carMapper.toEntity(requestDto)));
+    public CarResponseDto add(CarRequestDto requestDto) {
+        return carMapper.toDto(carRepository.save(carMapper.toModel(requestDto)));
     }
 
     @Override
-    public CarResponseDto updateCar(Long id, CarRequestDto requestDto) {
-        Car updatedCar = carMapper.toEntity(requestDto);
+    public CarResponseDto update(Long id, CarRequestDto requestDto) {
+        carRepository.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(CAN_NOT_FIND_CAR_BY_ID_MESSAGE + id)
+        );
+        Car updatedCar = carMapper.toModel(requestDto);
         updatedCar.setId(id);
         return carMapper.toDto(carRepository.save(updatedCar));
     }
 
     @Override
-    public void deleteCar(Long id) {
+    public void delete(Long id) {
         carRepository.deleteById(id);
     }
 }
