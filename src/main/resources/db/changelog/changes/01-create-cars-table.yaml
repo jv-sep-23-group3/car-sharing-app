@@ -13,12 +13,12 @@ databaseChangeLog:
                   constraints:
                     primaryKey: true
               - column:
-                  name: model
+                  name: brand
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
-                  name: brand
+                  name: model
                   type: VARCHAR(255)
                   constraints:
                     nullable: false

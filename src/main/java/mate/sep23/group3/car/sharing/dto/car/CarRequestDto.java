@@ -12,11 +12,11 @@ import mate.sep23.group3.car.sharing.model.Car;
 public class CarRequestDto {
     @NotNull(message = "name cannot be null")
     @Size(max = 255, message = "name cannot be greater than 255 characters")
-    private String model;
+    private String brand;
 
     @NotNull(message = "name cannot be null")
     @Size(max = 255, message = "name cannot be greater than 255 characters")
-    private String brand;
+    private String model;
 
     @NotNull
     private Car.Type type;
