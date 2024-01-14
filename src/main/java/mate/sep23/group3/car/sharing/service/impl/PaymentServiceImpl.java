@@ -2,17 +2,12 @@ package mate.sep23.group3.car.sharing.service.impl;
 
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
-import com.stripe.model.Price;
-import com.stripe.model.Product;
 import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
@@ -43,6 +38,8 @@ public class PaymentServiceImpl implements PaymentService {
             = "http://localhost:8080/api/payments/success?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_URL_TEMPLATE
             = "http://localhost:8080/api/payments/cancel?sessionId={CHECKOUT_SESSION_ID}";
+    private static final String SUCCESSFUL_PAYMENT = "Payment was successful";
+    private static final String CANCELED_PAYMENT = "You can pay in 24 hours";
     private static final Long DEFAULT_QUANTITY = 1L;
 
     private final PaymentFactory paymentFactory;
@@ -100,6 +97,30 @@ public class PaymentServiceImpl implements PaymentService {
         return paymentMapper.toDto(paymentRepository.save(payment));
     }
 
+    @Override
+    public String setSuccessfulPayment(String sessionId) {
+        Payment payment = paymentRepository.findBySessionId(sessionId).orElseThrow(
+                () -> new EntityNotFoundException("Can't get payment with session id: " + sessionId)
+        );
+
+        payment.setStatus(Payment.Status.PAID);
+        paymentRepository.save(payment);
+
+        return SUCCESSFUL_PAYMENT;
+    }
+
+    @Override
+    public String setCanceledPayment(String sessionId) {
+        Payment payment = paymentRepository.findBySessionId(sessionId).orElseThrow(
+                () -> new EntityNotFoundException("Can't get payment with session id: " + sessionId)
+        );
+
+        payment.setStatus(Payment.Status.CANCELED);
+        paymentRepository.save(payment);
+
+        return CANCELED_PAYMENT;
+    }
+
     private Session createSession(
             BigDecimal amount, Car car
     ) {
@@ -120,8 +141,6 @@ public class PaymentServiceImpl implements PaymentService {
     private SessionCreateParams.LineItem createLineItem(
             BigDecimal amount, Car car
     ) {
-
-
         return SessionCreateParams.LineItem.builder()
                 .setPriceData(createPriceData(amount, car))
                 .setQuantity(DEFAULT_QUANTITY)
@@ -131,7 +150,7 @@ public class PaymentServiceImpl implements PaymentService {
     private SessionCreateParams.LineItem.PriceData createPriceData(
             BigDecimal amount, Car car
     ) {
-        String name = String.format("%s %s", car.getModel(), car.getBrand());
+        String name = String.format("%s %s", car.getBrand(), car.getModel());
         String description = String.format("%s rental", name);
 
         return SessionCreateParams.LineItem.PriceData.builder()

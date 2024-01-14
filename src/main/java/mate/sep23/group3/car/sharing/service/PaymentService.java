@@ -10,4 +10,8 @@ public interface PaymentService {
     List<PaymentResponseDto> getAll(Long userId, Pageable pageable);
 
     PaymentResponseDto createPaymentSession(PaymentRequestDto paymentRequestDto);
+
+    String setSuccessfulPayment(String sessionId);
+
+    String setCanceledPayment(String sessionId);
 }
