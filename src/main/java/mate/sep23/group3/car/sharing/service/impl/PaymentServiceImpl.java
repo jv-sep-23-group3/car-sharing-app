@@ -6,7 +6,6 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
-import java.util.Collection;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
@@ -14,16 +13,14 @@ import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.exception.StripeProcessingException;
 import mate.sep23.group3.car.sharing.mapper.PaymentMapper;
-import mate.sep23.group3.car.sharing.model.Car;
-import mate.sep23.group3.car.sharing.model.Payment;
-import mate.sep23.group3.car.sharing.model.Rental;
-import mate.sep23.group3.car.sharing.model.User;
+import mate.sep23.group3.car.sharing.model.*;
 import mate.sep23.group3.car.sharing.repository.PaymentRepository;
 import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.repository.UserRepository;
 import mate.sep23.group3.car.sharing.service.PaymentService;
 import mate.sep23.group3.car.sharing.strategy.payment.RoleHandler;
 import mate.sep23.group3.car.sharing.strategy.payment.TypeHandler;
+import mate.sep23.group3.car.sharing.strategy.payment.handlers.roles.RoleFactory;
 import mate.sep23.group3.car.sharing.strategy.payment.handlers.type.PaymentFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Pageable;
@@ -43,7 +40,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Long DEFAULT_QUANTITY = 1L;
 
     private final PaymentFactory paymentFactory;
-    private final List<RoleHandler> roleHandlers;
+    private final RoleFactory roleFactory;
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
@@ -63,13 +60,13 @@ public class PaymentServiceImpl implements PaymentService {
                 () -> new EntityNotFoundException("Can't get user with id: " + userId)
         );
 
-        List<Payment> payments = roleHandlers.stream()
-                .filter(rh -> user.getRoles().contains(rh.getRoleName()))
-                .map(rh -> rh.getPayments(userId, pageable))
-                .flatMap(Collection::stream)
-                .toList();
+        Role role = user.getRoles().stream().findFirst().orElseThrow(
+                () -> new EntityNotFoundException("User doesn't have any roles")
+        );
 
-        return payments.stream()
+        RoleHandler roleHandler = roleFactory.getRoleHandler(role.getAuthority());
+
+        return roleHandler.getPayments(userId, pageable).stream()
                 .map(paymentMapper::toDto)
                 .toList();
     }
