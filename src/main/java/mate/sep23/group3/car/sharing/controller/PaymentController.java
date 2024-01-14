@@ -2,9 +2,8 @@ package mate.sep23.group3.car.sharing.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import java.util.List;
-
 import jakarta.validation.Valid;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;

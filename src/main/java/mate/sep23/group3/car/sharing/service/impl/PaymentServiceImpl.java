@@ -38,9 +38,13 @@ public class PaymentServiceImpl implements PaymentService {
     private static final Long DEFAULT_QUANTITY = 1L;
     private static final String CAR_RENT_TAX_CODE = "txcd_20030000";
     private static final String SUCCESS_URL_TEMPLATE
-            = "http://localhost:8080/api/payments/success?sessionId={CHECKOUT_SESSION_ID}";
+            = "http://localhost:8088/api/payments/success?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_URL_TEMPLATE
-            = "http://localhost:8080/api/payments/cancel?sessionId={CHECKOUT_SESSION_ID}";
+            = "http://localhost:8088/api/payments/cancel?sessionId={CHECKOUT_SESSION_ID}";
+    private static final String USER_NOTIFICATION_TEMPLATE
+            = "You have successfully paid to rent a %s.";
+    private static final String ADMIN_NOTIFICATION_TEMPLATE
+            = "User with email: %s successfully paid for car rental: %s.";
     private static final String SUCCESSFUL_PAYMENT = "Payment was successful";
     private static final String CANCELED_PAYMENT = "You can pay in 24 hours";
     private static final String USER_EXCEPTION_MESSAGE = "Can't get user with id: ";
@@ -115,8 +119,18 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
-        notificationService.sendNotification(); //user chat
-        notificationService.sendNotification(); //admin group
+
+        Rental rental = payment.getRental();
+        Car car = rental.getCar();
+
+        String carName = String.format("%s %s", car.getBrand(), car.getModel());
+
+        notificationService.sendNotification(
+                rental.getUser().getChatId(),
+                String.format(USER_NOTIFICATION_TEMPLATE, carName));
+        notificationService.sendNotification(
+                Long.parseLong(adminChatId),
+                String.format(ADMIN_NOTIFICATION_TEMPLATE, rental.getUser().getEmail(), carName));
 
         return SUCCESSFUL_PAYMENT;
     }
