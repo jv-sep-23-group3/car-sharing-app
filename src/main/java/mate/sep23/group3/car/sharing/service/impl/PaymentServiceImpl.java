@@ -21,6 +21,7 @@ import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.repository.PaymentRepository;
 import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.repository.UserRepository;
+import mate.sep23.group3.car.sharing.service.NotificationService;
 import mate.sep23.group3.car.sharing.service.PaymentService;
 import mate.sep23.group3.car.sharing.strategy.payment.RoleHandler;
 import mate.sep23.group3.car.sharing.strategy.payment.TypeHandler;
@@ -52,10 +53,14 @@ public class PaymentServiceImpl implements PaymentService {
     private final PaymentRepository paymentRepository;
     private final UserRepository userRepository;
     private final RentalRepository rentalRepository;
+    private final NotificationService notificationService;
     private final PaymentMapper paymentMapper;
 
     @Value("${stripe.api.key}")
     private String apiKey;
+
+    @Value("${admin.chat.id}")
+    private String adminChatId;
 
     @PostConstruct
     public void init() {
@@ -110,6 +115,8 @@ public class PaymentServiceImpl implements PaymentService {
 
         payment.setStatus(Payment.Status.PAID);
         paymentRepository.save(payment);
+        notificationService.sendNotification(); //user chat
+        notificationService.sendNotification(); //admin group
 
         return SUCCESSFUL_PAYMENT;
     }
