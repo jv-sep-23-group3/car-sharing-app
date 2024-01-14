@@ -5,7 +5,7 @@ databaseChangeLog:
       changes:
         - addUniqueConstraint:
             tableName: cars
-            columnNames: brand
+            columnNames: model
         - dropUniqueConstraint:
             tableName: cars
             uniqueColumns: type
