@@ -10,21 +10,21 @@ import mate.sep23.group3.car.sharing.model.Car;
 
 @Data
 public class CarRequestDto {
-    @NotNull(message = "Model name cannot be null")
-    @Size(max = 255, message = "Model name cannot be greater than 255 characters")
-    private String model;
-
-    @NotNull(message = "Brand name cannot be null")
-    @Size(max = 255, message = "Brand name cannot be greater than 255 characters")
+    @NotNull(message = "name cannot be null")
+    @Size(max = 255, message = "name cannot be greater than 255 characters")
     private String brand;
 
-    @NotNull(message = "")
+    @NotNull(message = "name cannot be null")
+    @Size(max = 255, message = "name cannot be greater than 255 characters")
+    private String model;
+
+    @NotNull
     private Car.Type type;
 
     @Min(0)
     private int inventory;
 
-    @NotNull(message = "Daily fee cannot be null")
+    @NotNull(message = "cannot be null")
     @Positive
     private BigDecimal dailyFee;
 }

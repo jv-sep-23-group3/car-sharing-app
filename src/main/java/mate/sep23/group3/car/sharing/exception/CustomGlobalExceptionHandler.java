@@ -45,7 +45,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return error.getDefaultMessage();
     }
 
-    @ExceptionHandler({RegistrationException.class, StripeProcessingException.class})
+    @ExceptionHandler({RegistrationException.class, RentalReturnException.class, StripeProcessingException.class})
     protected ResponseEntity<Object> handleExceptionRegistrationException(
             RegistrationException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex);
@@ -57,7 +57,11 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return buildErrorResponse(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, ex);
     }
 
-    @ExceptionHandler({ResourceNotFoundException.class, EntityNotFoundException.class})
+    @ExceptionHandler({
+            ResourceNotFoundException.class,
+            EntityNotFoundException.class,
+            CarInventoryException.class
+    })
     protected ResponseEntity<Object> handleExceptionResourceNotFoundAndEntityNot(Exception ex) {
         return buildErrorResponse(HttpStatus.NOT_FOUND, ex);
     }

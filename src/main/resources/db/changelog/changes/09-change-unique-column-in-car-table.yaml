@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: change-unique-column-in-cars-table
+      author: semeniuk
+      changes:
+        - addUniqueConstraint:
+            tableName: cars
+            columnNames: model
+        - dropUniqueConstraint:
+            tableName: cars
+            uniqueColumns: type
+            constraintName: type
