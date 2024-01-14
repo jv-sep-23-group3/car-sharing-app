@@ -22,14 +22,14 @@ public class OverdueRentalsNotification {
     private static final String COMA = ",";
     private static final String DAILY_FEE = "daily fee: ";
     private static final String RETURNED_DATE = "Returned date :";
-    private static final String MONEY = "\uD83D\uDCB5";
-    private static final String TIME = "\uD83D\uDD56";
+    private static final String MONEY = "💵";
+    private static final String TIME = "🕖";
     @Value("${admin.chat.id}")
     private Long adminChatId;
     private final TelegramBot telegramBot;
     private final RentalRepository rentalRepository;
 
-    @Scheduled(cron = "0 * * * * *")// notification will be sent every day at 15:00
+    @Scheduled(cron = "0 00 15 * * *")// notification will be sent every day at 15:00
     public void sendMessageToUsersAndManagerGroup() {
         List<Rental> rentals = rentalRepository.findAllByIsActive(true);
         StringBuilder messageForManagers = new StringBuilder();
