@@ -45,7 +45,8 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return error.getDefaultMessage();
     }
 
-    @ExceptionHandler({RegistrationException.class, RentalReturnException.class, StripeProcessingException.class})
+    @ExceptionHandler({RegistrationException.class, RentalReturnException.class,
+            StripeProcessingException.class})
     protected ResponseEntity<Object> handleExceptionRegistrationException(
             RegistrationException ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex);

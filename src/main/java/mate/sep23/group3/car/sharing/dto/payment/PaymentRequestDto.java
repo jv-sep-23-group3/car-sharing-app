@@ -1,10 +1,15 @@
 package mate.sep23.group3.car.sharing.dto.payment;
 
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import lombok.Data;
 import mate.sep23.group3.car.sharing.model.Payment;
 
 @Data
 public class PaymentRequestDto {
+    @NotNull(message = "can't be null")
+    @Positive(message = "must be greater than 0")
     private Long rentalId;
+    @NotNull(message = "can't be null")
     private Payment.Type type;
 }

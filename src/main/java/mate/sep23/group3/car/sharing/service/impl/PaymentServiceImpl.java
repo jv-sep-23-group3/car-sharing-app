@@ -13,7 +13,11 @@ import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.exception.StripeProcessingException;
 import mate.sep23.group3.car.sharing.mapper.PaymentMapper;
-import mate.sep23.group3.car.sharing.model.*;
+import mate.sep23.group3.car.sharing.model.Car;
+import mate.sep23.group3.car.sharing.model.Payment;
+import mate.sep23.group3.car.sharing.model.Rental;
+import mate.sep23.group3.car.sharing.model.Role;
+import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.repository.PaymentRepository;
 import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.repository.UserRepository;
@@ -30,6 +34,7 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class PaymentServiceImpl implements PaymentService {
     private static final String DEFAULT_CURRENCY = "USD";
+    private static final Long DEFAULT_QUANTITY = 1L;
     private static final String CAR_RENT_TAX_CODE = "txcd_20030000";
     private static final String SUCCESS_URL_TEMPLATE
             = "http://localhost:8080/api/payments/success?sessionId={CHECKOUT_SESSION_ID}";
@@ -37,8 +42,11 @@ public class PaymentServiceImpl implements PaymentService {
             = "http://localhost:8080/api/payments/cancel?sessionId={CHECKOUT_SESSION_ID}";
     private static final String SUCCESSFUL_PAYMENT = "Payment was successful";
     private static final String CANCELED_PAYMENT = "You can pay in 24 hours";
-    private static final Long DEFAULT_QUANTITY = 1L;
-
+    private static final String USER_EXCEPTION_MESSAGE = "Can't get user with id: ";
+    private static final String ROLE_EXCEPTION_MESSAGE = "User doesn't have any roles";
+    private static final String RENTAL_EXCEPTION_MESSAGE = "Can't get rental with id: ";
+    private static final String PAYMENT_EXCEPTION_MESSAGE = "Can't get payment with session id: ";
+    private static final String SESSION_EXCEPTION_MESSAGE = "Can't create session";
     private final PaymentFactory paymentFactory;
     private final RoleFactory roleFactory;
     private final PaymentRepository paymentRepository;
@@ -57,11 +65,11 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public List<PaymentResponseDto> getAll(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId).orElseThrow(
-                () -> new EntityNotFoundException("Can't get user with id: " + userId)
+                () -> new EntityNotFoundException(USER_EXCEPTION_MESSAGE + userId)
         );
 
         Role role = user.getRoles().stream().findFirst().orElseThrow(
-                () -> new EntityNotFoundException("User doesn't have any roles")
+                () -> new EntityNotFoundException(ROLE_EXCEPTION_MESSAGE)
         );
 
         RoleHandler roleHandler = roleFactory.getRoleHandler(role.getAuthority());
@@ -74,7 +82,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public PaymentResponseDto createPaymentSession(PaymentRequestDto paymentRequestDto) {
         Rental rental = rentalRepository.findById(paymentRequestDto.getRentalId()).orElseThrow(
-                () -> new EntityNotFoundException("Can't get rental with id: "
+                () -> new EntityNotFoundException(RENTAL_EXCEPTION_MESSAGE
                         + paymentRequestDto.getRentalId())
         );
 
@@ -97,7 +105,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public String setSuccessfulPayment(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId).orElseThrow(
-                () -> new EntityNotFoundException("Can't get payment with session id: " + sessionId)
+                () -> new EntityNotFoundException(PAYMENT_EXCEPTION_MESSAGE + sessionId)
         );
 
         payment.setStatus(Payment.Status.PAID);
@@ -109,7 +117,7 @@ public class PaymentServiceImpl implements PaymentService {
     @Override
     public String setCanceledPayment(String sessionId) {
         Payment payment = paymentRepository.findBySessionId(sessionId).orElseThrow(
-                () -> new EntityNotFoundException("Can't get payment with session id: " + sessionId)
+                () -> new EntityNotFoundException(PAYMENT_EXCEPTION_MESSAGE + sessionId)
         );
 
         payment.setStatus(Payment.Status.CANCELED);
@@ -131,7 +139,7 @@ public class PaymentServiceImpl implements PaymentService {
         try {
             return Session.create(createParams);
         } catch (StripeException e) {
-            throw new StripeProcessingException("Can't create session", e);
+            throw new StripeProcessingException(SESSION_EXCEPTION_MESSAGE, e);
         }
     }
 

@@ -1,12 +1,10 @@
 package mate.sep23.group3.car.sharing.mapper;
 
-import com.stripe.model.checkout.Session;
 import mate.sep23.group3.car.sharing.config.MapperConfig;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
 import mate.sep23.group3.car.sharing.model.Payment;
 import mate.sep23.group3.car.sharing.model.Rental;
-import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
@@ -21,7 +19,6 @@ public interface PaymentMapper {
 
     @Named("rentalFromId")
     default Rental rentalFromId(Long rentalId) {
-        return new Rental()
-                .setId(rentalId);
+        return new Rental().setId(rentalId);
     }
 }

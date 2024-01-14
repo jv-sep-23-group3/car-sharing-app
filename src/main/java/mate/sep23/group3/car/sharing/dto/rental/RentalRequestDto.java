@@ -7,9 +7,9 @@ import lombok.Data;
 
 @Data
 public class RentalRequestDto {
-    @NotNull
-    @Positive
+    @NotNull(message = "can't be null")
+    @Positive(message = "must be greater than 0")
     private Long carId;
-    @NotNull
+    @NotNull(message = "can't be null")
     private LocalDateTime returnDate;
 }

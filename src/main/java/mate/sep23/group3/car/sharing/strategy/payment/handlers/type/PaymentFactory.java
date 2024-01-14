@@ -1,11 +1,10 @@
 package mate.sep23.group3.car.sharing.strategy.payment.handlers.type;
 
+import java.util.Map;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.exception.PickHandlerException;
 import mate.sep23.group3.car.sharing.strategy.payment.TypeHandler;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Component
 @RequiredArgsConstructor
