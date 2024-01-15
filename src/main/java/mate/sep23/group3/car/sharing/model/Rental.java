@@ -14,10 +14,12 @@ import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 
 @Entity
 @Data
 @Table(name = "rentals")
+@Accessors(chain = true)
 public class Rental {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
