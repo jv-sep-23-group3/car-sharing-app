@@ -1,6 +1,5 @@
 package mate.sep23.group3.car.sharing.config;
 
-
 import org.testcontainers.containers.MySQLContainer;
 
 public class CustomMySqlContainer extends MySQLContainer<CustomMySqlContainer> {
