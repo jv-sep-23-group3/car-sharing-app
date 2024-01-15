@@ -58,6 +58,12 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
         return buildErrorResponse(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, ex);
     }
 
+    @ExceptionHandler({PendingPaymentExistsException.class})
+    protected ResponseEntity<Object> handleConflictException(
+            PendingPaymentExistsException ex) {
+        return buildErrorResponse(HttpStatus.CONFLICT, ex);
+    }
+
     @ExceptionHandler({
             ResourceNotFoundException.class,
             EntityNotFoundException.class,
