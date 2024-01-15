@@ -47,7 +47,7 @@ public class UserController {
     @ResponseStatus(HttpStatus.ACCEPTED)
     @Operation(summary = "Update profile",
             description = "You can update your first and last name")
-    @PatchMapping("/update-profile")
+    @PatchMapping("/me")
     UserWithNameAndLastNameResponseDto updateProfile(
             Authentication authentication,
             @RequestBody @Valid UserWithNameAndLastNameRequestDto requestDto) {
@@ -80,7 +80,7 @@ public class UserController {
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CUSTOMER')")
     @Operation(summary = "Get profile",
             description = "you receive your profile with an ID, email, first and last name")
-    @GetMapping("/get-profile")
+    @GetMapping("/me")
     UserResponseDto getProfile(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         return userService.getProfile(user.getEmail());
