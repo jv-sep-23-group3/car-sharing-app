@@ -64,7 +64,6 @@ class PaymentServiceImplTest {
     private NotificationService notificationService;
     @Mock
     private RoleFactory roleFactory;
-
     @Mock
     private RoleHandler roleHandler;
     @Mock

@@ -123,11 +123,11 @@ public class PaymentServiceImpl implements PaymentService {
         Rental rental = payment.getRental();
         Car car = rental.getCar();
 
-        String carName = String.format("%s %s", car.getBrand(), car.getModel());
-
         notificationService.sendNotification(
                 rental.getUser().getChatId(),
-                String.format(USER_NOTIFICATION_TEMPLATE, carName));
+                formatMessage(rental)
+        );
+
         notificationService.sendNotification(
                 adminChatId,
                 formatMessage(rental)
