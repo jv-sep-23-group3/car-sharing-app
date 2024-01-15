@@ -155,6 +155,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .setCancelUrl(CANCEL_URL_TEMPLATE)
                 .addLineItem(createLineItem(amount, car))
                 .setMode(SessionCreateParams.Mode.PAYMENT)
+                .setExpiresAt((System.currentTimeMillis() / 1000) + (24 * 60 * 60))
                 .build();
 
         try {
