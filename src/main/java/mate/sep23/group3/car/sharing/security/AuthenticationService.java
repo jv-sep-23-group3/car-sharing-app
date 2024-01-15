@@ -1,8 +1,8 @@
 package mate.sep23.group3.car.sharing.security;
 
 import lombok.RequiredArgsConstructor;
-import mate.sep23.group3.car.sharing.dto.user.UserLoginRequestDto;
-import mate.sep23.group3.car.sharing.dto.user.UserLoginResponseDto;
+import mate.sep23.group3.car.sharing.dto.user.login.UserLoginRequestDto;
+import mate.sep23.group3.car.sharing.dto.user.login.UserLoginResponseDto;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
