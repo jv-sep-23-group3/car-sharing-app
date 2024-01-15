@@ -5,28 +5,22 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-
-import com.stripe.Stripe;
-import com.stripe.exception.StripeException;
-import com.stripe.model.checkout.Session;
-import com.stripe.param.checkout.SessionCreateParams;
-import jakarta.annotation.PostConstruct;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.mapper.PaymentMapper;
-import mate.sep23.group3.car.sharing.model.*;
+import mate.sep23.group3.car.sharing.model.Car;
+import mate.sep23.group3.car.sharing.model.Payment;
+import mate.sep23.group3.car.sharing.model.Rental;
+import mate.sep23.group3.car.sharing.model.Role;
+import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.repository.PaymentRepository;
 import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.repository.UserRepository;
 import mate.sep23.group3.car.sharing.service.impl.PaymentServiceImpl;
 import mate.sep23.group3.car.sharing.strategy.payment.RoleHandler;
-import mate.sep23.group3.car.sharing.strategy.payment.TypeHandler;
-import mate.sep23.group3.car.sharing.strategy.payment.handlers.roles.CustomerRoleHandler;
 import mate.sep23.group3.car.sharing.strategy.payment.handlers.roles.RoleFactory;
-import mate.sep23.group3.car.sharing.strategy.payment.handlers.type.PaymentFactory;
 import org.apache.commons.lang3.builder.EqualsBuilder;
-import org.aspectj.weaver.TypeFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -35,7 +29,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
@@ -73,8 +66,6 @@ class PaymentServiceImplTest {
 
     @BeforeAll
     static void beforeAll() {
-
-
         Role customerRole = new Role()
                 .setId(1L)
                 .setRoleName(Role.RoleName.CUSTOMER);
@@ -106,14 +97,6 @@ class PaymentServiceImplTest {
                 .setInventory(5)
                 .setDailyFee(BigDecimal.valueOf(100));
 
-        Car secondCar = new Car()
-                .setId(2L)
-                .setBrand("Audi")
-                .setModel("A6")
-                .setType(Car.Type.SEDAN)
-                .setInventory(10)
-                .setDailyFee(BigDecimal.valueOf(50));
-
         firstRental = new Rental()
                 .setId(1L)
                 .setCar(firstCar)
@@ -121,14 +104,6 @@ class PaymentServiceImplTest {
                 .setRentalDate(LocalDateTime.now())
                 .setReturnDate(LocalDateTime.now().plusDays(10))
                 .setActualReturnDate(LocalDateTime.now().plusDays(10));
-
-        Rental secondRental = new Rental()
-                .setId(2L)
-                .setCar(secondCar)
-                .setUser(anotherCustomer)
-                .setRentalDate(LocalDateTime.now())
-                .setReturnDate(LocalDateTime.now().plusDays(5))
-                .setActualReturnDate(LocalDateTime.now().plusDays(7));
 
         createPaymentSessionDto = new PaymentRequestDto()
                 .setRentalId(1L)
@@ -160,6 +135,22 @@ class PaymentServiceImplTest {
                 .setSession("Session_url")
                 .setSessionId("Session_id")
                 .setAmount(BigDecimal.valueOf(1000));
+
+        Car secondCar = new Car()
+                .setId(2L)
+                .setBrand("Audi")
+                .setModel("A6")
+                .setType(Car.Type.SEDAN)
+                .setInventory(10)
+                .setDailyFee(BigDecimal.valueOf(50));
+
+        Rental secondRental = new Rental()
+                .setId(2L)
+                .setCar(secondCar)
+                .setUser(anotherCustomer)
+                .setRentalDate(LocalDateTime.now())
+                .setReturnDate(LocalDateTime.now().plusDays(5))
+                .setActualReturnDate(LocalDateTime.now().plusDays(7));
 
         second = new Payment()
                 .setId(2L)

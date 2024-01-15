@@ -1,8 +1,18 @@
 package mate.sep23.group3.car.sharing.controller;
 
+import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Set;
+import javax.sql.DataSource;
 import lombok.SneakyThrows;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
 import mate.sep23.group3.car.sharing.model.Payment;
@@ -25,19 +35,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-
-import javax.sql.DataSource;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class PaymentControllerTest {
@@ -72,7 +69,8 @@ class PaymentControllerTest {
             );
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/users/roles/add-users-roles-to-users-roles-table.sql")
+                    new ClassPathResource("database/users/roles/"
+                            + "add-users-roles-to-users-roles-table.sql")
             );
             ScriptUtils.executeSqlScript(
                     connection,
@@ -123,7 +121,8 @@ class PaymentControllerTest {
             connection.setAutoCommit(true);
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/payments/delete-payments-from-payments-table.sql")
+                    new ClassPathResource("database/payments/"
+                            + "delete-payments-from-payments-table.sql")
             );
             ScriptUtils.executeSqlScript(
                     connection,
@@ -131,7 +130,8 @@ class PaymentControllerTest {
             );
             ScriptUtils.executeSqlScript(
                     connection,
-                    new ClassPathResource("database/users/roles/delete-users-roles-from-users-roles-table.sql")
+                    new ClassPathResource("database/users/roles/"
+                            + "delete-users-roles-from-users-roles-table.sql")
             );
             ScriptUtils.executeSqlScript(
                     connection,
