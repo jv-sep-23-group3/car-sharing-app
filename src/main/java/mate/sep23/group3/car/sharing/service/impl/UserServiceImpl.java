@@ -1,14 +1,16 @@
 package mate.sep23.group3.car.sharing.service.impl;
 
+import java.util.Set;
+import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.role.RoleUpdateForUserRequestDto;
-import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameRequestDto;
-import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameResponseDto;
-import mate.sep23.group3.car.sharing.dto.user.registration.UserRegistrationRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.UserResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.email.UserUpdateEmailRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.email.UserUpdateEmailResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.password.UserUpdatePasswordRequestDto;
+import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameRequestDto;
+import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameResponseDto;
+import mate.sep23.group3.car.sharing.dto.user.registration.UserRegistrationRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleRequestDto;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.exception.RegistrationException;
@@ -22,12 +24,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
@@ -38,7 +34,6 @@ public class UserServiceImpl implements UserService {
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-    private Role.RoleName roleName;
 
     @Override
     @Transactional
@@ -61,7 +56,8 @@ public class UserServiceImpl implements UserService {
         user.getRoles().clear();
         Set<Role> newRoles = requestDto.getRoles().stream()
                 .map(roleIndex -> roleRepository.findById(roleIndex)
-                        .orElseThrow(() -> new EntityNotFoundException(FAILED_FIND_ROLE + roleIndex)))
+                        .orElseThrow(()
+                                -> new EntityNotFoundException(FAILED_FIND_ROLE + roleIndex)))
                 .collect(Collectors.toSet());
         user.getRoles().addAll(newRoles);
         userRepository.save(user);
@@ -69,7 +65,8 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserWithNameAndLastNameResponseDto updateProfile(Long userId, UserWithNameAndLastNameRequestDto requestDto) {
+    public UserWithNameAndLastNameResponseDto updateProfile(
+            Long userId, UserWithNameAndLastNameRequestDto requestDto) {
         User userUpdateProfile = userRepository.findRolesInUser(userId)
                 .orElseThrow(() -> new EntityNotFoundException(FAILED_FIND_USER + userId));
         if (!requestDto.getFirstName().isBlank()) {

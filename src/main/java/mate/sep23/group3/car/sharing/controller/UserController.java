@@ -26,7 +26,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Users management", description = "Endpoints for managing ssers")
+@Tag(name = "Users management", description = "Endpoints for managing users")
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/users")
@@ -35,43 +35,51 @@ public class UserController {
 
     @PreAuthorize("hasAnyRole('ADMIN')")
     @PutMapping("/{id}/role")
-    @Operation(summary = "Update the role of a user by ID")
-    public UserWithRoleRequestDto updateRole(@PathVariable("id") Long userId,
-                                             @RequestBody @Valid RoleUpdateForUserRequestDto requestDto) {
+    @Operation(summary = "Update the role of a user by ID",
+            description = "Only the administrator can update roles for a user")
+    public UserWithRoleRequestDto updateRole(
+            @PathVariable("id") Long userId,
+            @RequestBody @Valid RoleUpdateForUserRequestDto requestDto) {
         return userService.updateRole(userId, requestDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CUSTOMER')")
     @ResponseStatus(HttpStatus.ACCEPTED)
-    @Operation(summary = "Update profile")
+    @Operation(summary = "Update profile",
+            description = "You can update your first and last name")
     @PatchMapping("/update-profile")
-    UserWithNameAndLastNameResponseDto updateProfile(Authentication authentication,
-                                                      @RequestBody @Valid UserWithNameAndLastNameRequestDto requestDto) {
+    UserWithNameAndLastNameResponseDto updateProfile(
+            Authentication authentication,
+            @RequestBody @Valid UserWithNameAndLastNameRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
         return userService.updateProfile(user.getId(), requestDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CUSTOMER')")
     @ResponseStatus(HttpStatus.RESET_CONTENT)
-    @Operation(summary = "Update profile")
+    @Operation(summary = "Update your password",
+            description = "You need to enter a password and confirm it")
     @PutMapping("/update-password")
-     void updatePassword(Authentication authentication,
-                                    @RequestBody @Valid UserUpdatePasswordRequestDto requestDto) {
+     void updatePassword(
+             Authentication authentication,
+             @RequestBody @Valid UserUpdatePasswordRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
         userService.updatePassword(user.getId(), requestDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CUSTOMER')")
-    @Operation(summary = "Update profile")
+    @Operation(summary = "Update email", description = "Update password for your account")
     @PutMapping("/update-email")
-    UserUpdateEmailResponseDto updateEmail(Authentication authentication,
-                                            @RequestBody @Valid UserUpdateEmailRequestDto requestDto) {
+    UserUpdateEmailResponseDto updateEmail(
+            Authentication authentication,
+            @RequestBody @Valid UserUpdateEmailRequestDto requestDto) {
         User user = (User) authentication.getPrincipal();
         return userService.updateEmail(user.getId(), requestDto);
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CUSTOMER')")
-    @Operation(summary = "Get profile")
+    @Operation(summary = "Get profile",
+            description = "you receive your profile with an ID, email, first and last name")
     @GetMapping("/get-profile")
     UserResponseDto getProfile(Authentication authentication) {
         User user = (User) authentication.getPrincipal();

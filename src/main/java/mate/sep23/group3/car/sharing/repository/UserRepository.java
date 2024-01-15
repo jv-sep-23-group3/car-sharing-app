@@ -1,8 +1,6 @@
 package mate.sep23.group3.car.sharing.repository;
 
 import java.util.Optional;
-
-import jakarta.persistence.Entity;
 import mate.sep23.group3.car.sharing.model.User;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;

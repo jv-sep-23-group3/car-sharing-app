@@ -6,15 +6,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 import lombok.Data;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import org.springframework.security.core.GrantedAuthority;
-
 
 @Entity
 @Data
@@ -32,7 +27,6 @@ public class Role implements GrantedAuthority {
     public String getAuthority() {
         return "ROLE_" + roleName.name();
     }
-
 
     public enum RoleName {
         MANAGER(0), CUSTOMER(1), ADMIN(2);

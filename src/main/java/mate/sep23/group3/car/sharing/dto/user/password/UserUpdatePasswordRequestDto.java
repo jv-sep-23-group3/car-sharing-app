@@ -4,6 +4,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import mate.sep23.group3.car.sharing.validation.FieldMatchChangePassword;
 import org.hibernate.validator.constraints.Length;
+
 @FieldMatchChangePassword
 @Data
 public class UserUpdatePasswordRequestDto {
