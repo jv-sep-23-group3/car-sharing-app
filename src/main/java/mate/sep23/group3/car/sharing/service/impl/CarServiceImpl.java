@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class CarServiceImpl implements CarService {
     private static final String CAN_NOT_FIND_CAR_BY_ID_MESSAGE = "Can't find car by id: ";
+    private static final String CAN_NOT_FIND_AND_UPDATE_CAR_BY_ID_MESSAGE
+            = "Can't find and update car by id: ";
     private final CarRepository carRepository;
     private final CarMapper carMapper;
 
@@ -41,7 +43,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarResponseDto update(Long id, CarRequestDto requestDto) {
         carRepository.findById(id).orElseThrow(
-                () -> new EntityNotFoundException(CAN_NOT_FIND_CAR_BY_ID_MESSAGE + id)
+                () -> new EntityNotFoundException(CAN_NOT_FIND_AND_UPDATE_CAR_BY_ID_MESSAGE + id)
         );
         Car updatedCar = carMapper.toModel(requestDto);
         updatedCar.setId(id);

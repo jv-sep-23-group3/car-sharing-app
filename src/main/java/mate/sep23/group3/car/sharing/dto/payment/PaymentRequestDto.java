@@ -1,15 +1,15 @@
-package mate.sep23.group3.car.sharing.dto.rental;
+package mate.sep23.group3.car.sharing.dto.payment;
 
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
-import java.time.LocalDateTime;
 import lombok.Data;
+import mate.sep23.group3.car.sharing.model.Payment;
 
 @Data
-public class RentalRequestDto {
+public class PaymentRequestDto {
     @NotNull(message = "can't be null")
     @Positive(message = "must be greater than 0")
-    private Long carId;
+    private Long rentalId;
     @NotNull(message = "can't be null")
-    private LocalDateTime returnDate;
+    private Payment.Type type;
 }

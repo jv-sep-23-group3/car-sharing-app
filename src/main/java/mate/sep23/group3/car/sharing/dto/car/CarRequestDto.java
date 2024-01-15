@@ -6,9 +6,11 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import java.math.BigDecimal;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import mate.sep23.group3.car.sharing.model.Car;
 
 @Data
+@Accessors(chain = true)
 public class CarRequestDto {
     @NotNull(message = "name cannot be null")
     @Size(max = 255, message = "name cannot be greater than 255 characters")

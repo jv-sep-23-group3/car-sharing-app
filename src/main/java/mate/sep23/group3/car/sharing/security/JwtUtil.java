@@ -14,8 +14,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class JwtUtil {
-
-    private static final String TOKEN_IS_INVALID_MSG = "Token is invalid!";
     @Value("${jwt.expiration}")
     private Long expiration;
 
@@ -42,7 +40,7 @@ public class JwtUtil {
                     .parseClaimsJws(token);
             return !claimsJws.getBody().getExpiration().before(new Date());
         } catch (JwtException | IllegalArgumentException e) {
-            throw new JwtException(TOKEN_IS_INVALID_MSG);
+            return false;
         }
     }
 
