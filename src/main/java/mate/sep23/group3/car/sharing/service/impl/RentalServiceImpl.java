@@ -8,12 +8,15 @@ import mate.sep23.group3.car.sharing.dto.rental.RentalRequestDto;
 import mate.sep23.group3.car.sharing.dto.rental.RentalResponseDto;
 import mate.sep23.group3.car.sharing.exception.CarInventoryException;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
+import mate.sep23.group3.car.sharing.exception.PendingPaymentExistsException;
 import mate.sep23.group3.car.sharing.exception.RentalReturnException;
 import mate.sep23.group3.car.sharing.mapper.RentalMapper;
 import mate.sep23.group3.car.sharing.model.Car;
+import mate.sep23.group3.car.sharing.model.Payment;
 import mate.sep23.group3.car.sharing.model.Rental;
 import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.repository.CarRepository;
+import mate.sep23.group3.car.sharing.repository.PaymentRepository;
 import mate.sep23.group3.car.sharing.repository.RentalRepository;
 import mate.sep23.group3.car.sharing.repository.UserRepository;
 import mate.sep23.group3.car.sharing.service.NotificationService;
@@ -33,6 +36,9 @@ public class RentalServiceImpl implements RentalService {
             "Can't find user by ID: ";
     private static final String CAR_INVENTORY_IS_EMPTY_MESSAGE =
             "Sorry, this car model isn't currently available!";
+    private static final String PENDING_PAYMENT_EXISTS_EXCEPTION =
+            "Unfortunately, you are unable to rent a new car "
+                    + "if you have at least one pending payment!";
     private static final String CAN_NOT_RETURN_CAR_MESSAGE =
             "We cannot return a car that has actually already returned.";
 
@@ -41,10 +47,16 @@ public class RentalServiceImpl implements RentalService {
     private final CarRepository carRepository;
     private final UserRepository userRepository;
     private final NotificationService notificationService;
+    private final PaymentRepository paymentRepository;
 
     @Override
     @Transactional
     public RentalResponseDto save(RentalRequestDto requestDto, Long userId) {
+        Boolean isPendingExists =
+                paymentRepository.existsPaymentByIdAndType(userId, Payment.Status.PENDING);
+        if (isPendingExists) {
+            throw new PendingPaymentExistsException(PENDING_PAYMENT_EXISTS_EXCEPTION);
+        }
         return rentalMapper.toDto(
                 rentalRepository.save(setUpRental(requestDto, userId))
         );

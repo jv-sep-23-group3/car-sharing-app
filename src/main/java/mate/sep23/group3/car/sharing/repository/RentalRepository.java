@@ -20,4 +20,9 @@ public interface RentalRepository extends JpaRepository<Rental, Long> {
 
     @EntityGraph(attributePaths = {"car", "user"})
     Optional<Rental> findByIdAndUserId(Long id, Long userId);
+
+    List<Rental> findAllByUserId(Long userId);
+
+    @EntityGraph(attributePaths = {"car", "user"})
+    Optional<Rental> findById(Long id);
 }
