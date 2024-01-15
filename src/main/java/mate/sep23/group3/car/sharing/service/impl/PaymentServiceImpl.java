@@ -6,6 +6,8 @@ import com.stripe.model.checkout.Session;
 import com.stripe.param.checkout.SessionCreateParams;
 import jakarta.annotation.PostConstruct;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
@@ -43,8 +45,6 @@ public class PaymentServiceImpl implements PaymentService {
             = "http://localhost:8088/api/payments/cancel?sessionId={CHECKOUT_SESSION_ID}";
     private static final String USER_NOTIFICATION_TEMPLATE
             = "You have successfully paid to rent a %s.";
-    private static final String ADMIN_NOTIFICATION_TEMPLATE
-            = "User with email: %s successfully paid for car rental: %s.";
     private static final String SUCCESSFUL_PAYMENT = "Payment was successful";
     private static final String CANCELED_PAYMENT = "You can pay in 24 hours";
     private static final String USER_EXCEPTION_MESSAGE = "Can't get user with id: ";
@@ -128,10 +128,8 @@ public class PaymentServiceImpl implements PaymentService {
         notificationService.sendNotification(
                 rental.getUser().getChatId(),
                 String.format(USER_NOTIFICATION_TEMPLATE, carName));
-        notificationService.sendNotification(
-                Long.parseLong(adminChatId),
-                String.format(ADMIN_NOTIFICATION_TEMPLATE, rental.getUser().getEmail(), carName));
-
+        notificationService.sendNotification(Long.parseLong(adminChatId),
+                formatMessage(rental));
         return SUCCESSFUL_PAYMENT;
     }
 
@@ -197,5 +195,20 @@ public class PaymentServiceImpl implements PaymentService {
                 .setDescription(description)
                 .setTaxCode(CAR_RENT_TAX_CODE)
                 .build();
+    }
+
+    private String formatMessage(Rental rental) {
+        return String.format("👤User with email: "
+                + rental.getUser().getEmail()
+                + " successfully paid💸 for car rental. "
+                + System.lineSeparator()
+                + "Car: " + rental.getCar().getBrand() + " "
+                + rental.getCar().getModel() + "🚗"
+                + System.lineSeparator()
+                + System.lineSeparator()
+                + "💳Payment time: "
+                + LocalDateTime.now()
+                .format(DateTimeFormatter.ofPattern("d MMMM yyyy h:mm a")) + "⏳"
+        );
     }
 }
