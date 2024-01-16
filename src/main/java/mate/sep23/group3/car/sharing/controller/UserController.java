@@ -11,7 +11,7 @@ import mate.sep23.group3.car.sharing.dto.user.email.UserUpdateEmailResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.password.UserUpdatePasswordRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameResponseDto;
-import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleRequestDto;
+import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleResponseDto;
 import mate.sep23.group3.car.sharing.model.User;
 import mate.sep23.group3.car.sharing.service.UserService;
 import org.springframework.http.HttpStatus;
@@ -37,7 +37,7 @@ public class UserController {
     @PutMapping("/{id}/role")
     @Operation(summary = "Update the role of a user by ID",
             description = "Only the administrator can update roles for a user")
-    public UserWithRoleRequestDto updateRole(
+    public UserWithRoleResponseDto updateRole(
             @PathVariable("id") Long userId,
             @RequestBody @Valid RoleUpdateForUserRequestDto requestDto) {
         return userService.updateRole(userId, requestDto);

@@ -22,7 +22,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 @ExtendWith(MockitoExtension.class)
-public class RoleServiceImplTest {
+public class RoleServiceTest {
     private static Role adminRole;
     private static Role managerRole;
     private static Role customerRole;

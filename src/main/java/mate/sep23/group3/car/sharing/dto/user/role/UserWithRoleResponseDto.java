@@ -4,7 +4,7 @@ import java.util.Set;
 import lombok.Data;
 
 @Data
-public class UserWithRoleRequestDto {
+public class UserWithRoleResponseDto {
     private Long id;
     private Set<Long> roles;
 }

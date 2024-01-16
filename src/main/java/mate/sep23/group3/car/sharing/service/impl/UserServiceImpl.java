@@ -11,7 +11,7 @@ import mate.sep23.group3.car.sharing.dto.user.password.UserUpdatePasswordRequest
 import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.registration.UserRegistrationRequestDto;
-import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleRequestDto;
+import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleResponseDto;
 import mate.sep23.group3.car.sharing.exception.EntityNotFoundException;
 import mate.sep23.group3.car.sharing.exception.RegistrationException;
 import mate.sep23.group3.car.sharing.mapper.UserMapper;
@@ -28,8 +28,9 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
     private static final String CAN_NOT_REGISTER_USER_BY_EMAIL = "Can't register a user by email:";
-    private static final String FAILED_FIND_USER = "Can't find user by ID";
-    private static final String FAILED_FIND_ROLE = "Can't find role by ID";
+    private static final String FAILED_FIND_USER = "Can't find user by ID ";
+    private static final String FAILED_FIND_USER_BY_EMAIL = "Can't find user by email ";
+    private static final String FAILED_FIND_ROLE = "Can't find role by ID ";
     private final UserRepository userRepository;
     private final UserMapper userMapper;
     private final PasswordEncoder passwordEncoder;
@@ -50,7 +51,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserWithRoleRequestDto updateRole(Long userId, RoleUpdateForUserRequestDto requestDto) {
+    public UserWithRoleResponseDto updateRole(Long userId, RoleUpdateForUserRequestDto requestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new EntityNotFoundException(FAILED_FIND_USER + userId));
         user.getRoles().clear();
@@ -100,7 +101,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserResponseDto getProfile(String email) {
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new EntityNotFoundException(FAILED_FIND_USER + email));
+                .orElseThrow(() -> new EntityNotFoundException(FAILED_FIND_USER_BY_EMAIL + email));
         return userMapper.toDto(user);
     }
 }

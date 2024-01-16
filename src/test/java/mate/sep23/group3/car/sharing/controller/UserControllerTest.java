@@ -11,6 +11,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.sql.SQLException;
 import java.util.Set;
+import mate.sep23.group3.car.sharing.config.ControllerTestConfig;
 import mate.sep23.group3.car.sharing.dto.role.RoleUpdateForUserRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.UserResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.email.UserUpdateEmailRequestDto;
@@ -18,6 +19,7 @@ import mate.sep23.group3.car.sharing.dto.user.email.UserUpdateEmailResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.password.UserUpdatePasswordRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameRequestDto;
 import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameResponseDto;
+import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleResponseDto;
 import mate.sep23.group3.car.sharing.model.Role;
 import mate.sep23.group3.car.sharing.model.User;
 import org.junit.jupiter.api.BeforeAll;
@@ -26,11 +28,11 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
@@ -43,10 +45,12 @@ import org.springframework.web.context.WebApplicationContext;
 @Sql(scripts = {"classpath:database/users_roles/delete-users-roles-from-users-roles-table.sql",
         "classpath:database/users/delete-user-from-users-table.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Import(ControllerTestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserControllerTest {
     protected static MockMvc mockMvc;
     private static final Long INDEX_OF_UPDATING_USER = 3L;
+    private static final Long NOT_EXISTING_USER_ID = 50L;
     private static Role userRole;
     private static User user;
     private static UserResponseDto userResponseDto;
@@ -59,6 +63,8 @@ public class UserControllerTest {
     private static UserWithNameAndLastNameRequestDto userWithNameAndLastNameRequestDto;
     private static UserWithNameAndLastNameResponseDto userWithNameAndLastNameResponseDto;
     private static RoleUpdateForUserRequestDto roleUpdateForUserRequestDto;
+    private static RoleUpdateForUserRequestDto roleNotExistUpdateForUserRequestDto;
+    private static UserWithRoleResponseDto userWithRoleResponseDto;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -73,8 +79,8 @@ public class UserControllerTest {
                 .build();
 
         userRole = new Role();
-        userRole.setId(1L);
-        userRole.setRoleName(Role.RoleName.MANAGER);
+        userRole.setId(3L);
+        userRole.setRoleName(Role.RoleName.ADMIN);
 
         user = new User();
         user.setId(1L);
@@ -121,7 +127,14 @@ public class UserControllerTest {
                 userWithNameAndLastNameRequestDto.getLastName());
 
         roleUpdateForUserRequestDto = new RoleUpdateForUserRequestDto();
-        roleUpdateForUserRequestDto.setRoles(Set.of(1L,2L));
+        roleUpdateForUserRequestDto.setRoles(Set.of(1L, 2L));
+
+        userWithRoleResponseDto = new UserWithRoleResponseDto();
+        userWithRoleResponseDto.setId(INDEX_OF_UPDATING_USER);
+        userWithRoleResponseDto.setRoles(roleUpdateForUserRequestDto.getRoles());
+
+        roleNotExistUpdateForUserRequestDto = new RoleUpdateForUserRequestDto();
+        roleNotExistUpdateForUserRequestDto.setRoles(Set.of(5L));
     }
 
     @BeforeEach
@@ -132,23 +145,21 @@ public class UserControllerTest {
         SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
-    @WithMockUser(username = "user", roles = {"CUSTOMER", "MANAGER", "ADMIN"})
     @Test
     @DisplayName("Get my profile info")
     void getProfile_ExistingId_Success() throws Exception {
         MvcResult result = mockMvc.perform(
-                            get("/users/me"))
-                    .andExpect(status().isOk())
-                    .andReturn();
+                        get("/users/me"))
+                .andExpect(status().isOk())
+                .andReturn();
 
         UserResponseDto actual = objectMapper.readValue(result.getResponse()
-                    .getContentAsString(), UserResponseDto.class);
+                .getContentAsString(), UserResponseDto.class);
 
         assertNotNull(actual);
         assertEquals(userResponseDto, actual);
     }
 
-    @WithMockUser(username = "user", roles = {"CUSTOMER", "MANAGER", "ADMIN"})
     @Test
     @DisplayName("Update user's email")
     void updateEmail_ValidRequestDto_Success() throws Exception {
@@ -169,7 +180,6 @@ public class UserControllerTest {
         assertEquals(updateEmailResponseDto, actual);
     }
 
-    @WithMockUser(username = "user", roles = {"CUSTOMER", "MANAGER", "ADMIN"})
     @Test
     @DisplayName("Update user's email, not valid email")
     void updateEmail_NotValidRequestDto_BadRequest() throws Exception {
@@ -184,7 +194,6 @@ public class UserControllerTest {
                 .andReturn();
     }
 
-    @WithMockUser(username = "user", roles = {"CUSTOMER", "MANAGER", "ADMIN"})
     @Test
     @DisplayName("Update user's password")
     void updatePassword_ValidRequestDto_Success() throws Exception {
@@ -198,7 +207,6 @@ public class UserControllerTest {
                 .andExpect(status().isResetContent());
     }
 
-    @WithMockUser(username = "user", roles = {"CUSTOMER", "MANAGER", "ADMIN"})
     @Test
     @DisplayName("Update user's password, repeat password doesn't match")
     void updatePassword_RepeatPasswordDoesNotMatch_BadRequest() throws Exception {
@@ -213,7 +221,6 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @WithMockUser(username = "user", roles = {"CUSTOMER", "MANAGER", "ADMIN"})
     @Test
     @DisplayName("Update user's password, password is short")
     void updatePassword_PasswordIsShort_BadRequest() throws Exception {
@@ -227,7 +234,6 @@ public class UserControllerTest {
                 .andExpect(status().isBadRequest());
     }
 
-    @WithMockUser(username = "user", roles = {"CUSTOMER", "MANAGER", "ADMIN"})
     @Test
     @DisplayName("Update user's profile")
     void updateProfile_ValidRequestDto_Success() throws Exception {
@@ -248,25 +254,53 @@ public class UserControllerTest {
         assertEquals(userWithNameAndLastNameResponseDto, actual);
     }
 
-    @WithMockUser(username = "user", roles = {"ADMIN"})
     @Test
     @DisplayName("Update user's roles")
     void updateRole_ValidRequestDto_Success() throws Exception {
         String jsonRequest = objectMapper.writeValueAsString(roleUpdateForUserRequestDto);
 
-        //        MvcResult result = mockMvc.perform(
-        //                        patch("/users/{id}/role", INDEX_OF_UPDATING_USER)
-        //                                .content(jsonRequest)
-        //                                .contentType(MediaType.APPLICATION_JSON)
-        //                )
-        //                .andExpect(status().isOk())
-        //                .andReturn();
+        MvcResult result = mockMvc.perform(
+                        put("/users/{id}/role", INDEX_OF_UPDATING_USER)
+                                .content(jsonRequest)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
 
-        //        UserWithNameAndLastNameResponseDto actual = objectMapper
-        //        .readValue(result.getResponse()
-        //                .getContentAsString(), UserWithNameAndLastNameResponseDto.class);
-        //
-        //        assertNotNull(actual);
-        //        assertEquals(userWithNameAndLastNameResponseDto, actual);
+        UserWithRoleResponseDto actual = objectMapper
+                .readValue(result.getResponse()
+                        .getContentAsString(), UserWithRoleResponseDto.class);
+
+        assertNotNull(actual);
+        assertEquals(userWithRoleResponseDto, actual);
+    }
+
+    @Test
+    @DisplayName("Update user's roles, user id doesn't exist")
+    void updateRole_NotExistingUserId_NotFound() throws Exception {
+        String jsonRequest = objectMapper.writeValueAsString(roleUpdateForUserRequestDto);
+
+        MvcResult result = mockMvc.perform(
+                        put("/users/{id}/role", NOT_EXISTING_USER_ID)
+                                .content(jsonRequest)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andReturn();
+    }
+
+    @Test
+    @DisplayName("Update user's roles, role doesn't exist")
+    void updateRole__NotFound() throws Exception {
+        String jsonRequest = objectMapper.writeValueAsString(
+                roleNotExistUpdateForUserRequestDto);
+
+        MvcResult result = mockMvc.perform(
+                        put("/users/{id}/role", INDEX_OF_UPDATING_USER)
+                                .content(jsonRequest)
+                                .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andReturn();
     }
 }

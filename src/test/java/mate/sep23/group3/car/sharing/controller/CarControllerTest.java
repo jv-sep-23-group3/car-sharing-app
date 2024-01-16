@@ -14,6 +14,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import java.math.BigDecimal;
 import java.sql.SQLException;
 import java.util.List;
+import mate.sep23.group3.car.sharing.config.ControllerTestConfig;
 import mate.sep23.group3.car.sharing.dto.car.CarRequestDto;
 import mate.sep23.group3.car.sharing.dto.car.CarResponseDto;
 import mate.sep23.group3.car.sharing.model.Car;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.jdbc.Sql;
@@ -36,6 +38,7 @@ import org.testcontainers.shaded.org.apache.commons.lang3.builder.EqualsBuilder;
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 @Sql(scripts = {"classpath:database/cars/delete-car-from-cars-table.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+@Import(ControllerTestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class CarControllerTest {
     protected static MockMvc mockMvc;

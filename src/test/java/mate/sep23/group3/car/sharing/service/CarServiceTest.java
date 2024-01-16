@@ -27,7 +27,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 
 @ExtendWith(MockitoExtension.class)
-class CarServiceImplTest {
+class CarServiceTest {
     private static final Long EXISTING_ID = 1L;
     private static final Long NOT_EXISTING_ID = 10L;
     private static Car car;
