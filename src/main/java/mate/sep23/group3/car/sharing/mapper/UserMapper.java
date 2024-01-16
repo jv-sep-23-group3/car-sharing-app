@@ -7,7 +7,7 @@ import mate.sep23.group3.car.sharing.dto.user.UserResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.email.UserUpdateEmailResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.profile.UserWithNameAndLastNameResponseDto;
 import mate.sep23.group3.car.sharing.dto.user.registration.UserRegistrationRequestDto;
-import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleRequestDto;
+import mate.sep23.group3.car.sharing.dto.user.role.UserWithRoleResponseDto;
 import mate.sep23.group3.car.sharing.model.Role;
 import mate.sep23.group3.car.sharing.model.User;
 import org.mapstruct.Mapper;
@@ -25,7 +25,7 @@ public interface UserMapper {
     UserWithNameAndLastNameResponseDto toWithNameAndLastNameResponse(User user);
 
     @Mapping(target = "roles", source = "user.roles", qualifiedByName = "mapRolesToIds")
-    UserWithRoleRequestDto toUserWithRole(User user);
+    UserWithRoleResponseDto toUserWithRole(User user);
 
     @Named("mapRolesToIds")
     default Set<Long> mapRolesToIds(Set<Role> roles) {
