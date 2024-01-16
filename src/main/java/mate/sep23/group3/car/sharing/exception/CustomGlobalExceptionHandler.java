@@ -48,19 +48,19 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ExceptionHandler({RegistrationException.class, RentalReturnException.class,
             StripeProcessingException.class})
     protected ResponseEntity<Object> handleExceptionRegistrationException(
-            RegistrationException ex) {
+            Exception ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler({UnauthorizedOperationException.class})
     protected ResponseEntity<Object> handleUnauthorizedOperationException(
-            UnauthorizedOperationException ex) {
+            Exception ex) {
         return buildErrorResponse(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, ex);
     }
 
     @ExceptionHandler({PendingPaymentExistsException.class})
     protected ResponseEntity<Object> handleConflictException(
-            PendingPaymentExistsException ex) {
+            Exception ex) {
         return buildErrorResponse(HttpStatus.CONFLICT, ex);
     }
 
