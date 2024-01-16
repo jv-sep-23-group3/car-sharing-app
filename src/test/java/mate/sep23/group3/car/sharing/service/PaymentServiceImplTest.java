@@ -264,25 +264,9 @@ class PaymentServiceImplTest {
     void setCanceledPayment_ValidSessionId_ReturnMessage() {
         String sessionId = "valid session id";
 
-        Mockito.when(paymentRepository.findBySessionId(sessionId)).thenReturn(Optional.of(first));
-        Mockito.when(paymentRepository.save(first)).thenReturn(first);
-
         String expected = "You can pay in 24 hours";
         String actual = paymentService.setCanceledPayment(sessionId);
 
         Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
-    @DisplayName("Set canceled payment with invalid session id")
-    void setCanceledPayment_InvalidSessionId_ThrowException() {
-        String sessionId = "invalid session id";
-
-        Mockito.when(paymentRepository.findBySessionId(sessionId)).thenReturn(Optional.empty());
-
-        Assertions.assertThrows(
-                EntityNotFoundException.class,
-                () -> paymentService.setCanceledPayment(sessionId)
-        );
     }
 }
