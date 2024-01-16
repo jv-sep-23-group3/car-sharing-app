@@ -31,6 +31,26 @@ public class Role implements GrantedAuthority {
     }
 
     public enum RoleName {
-        MANAGER, CUSTOMER, ADMIN
+        MANAGER(0), CUSTOMER(1), ADMIN(2);
+
+        private final int index;
+
+        RoleName(int index) {
+            this.index = index;
+        }
+
+        public Integer getIndex() {
+            return index;
+        }
+
+        public static RoleName getByIndex(int index) {
+            for (RoleName roleName : RoleName.values()) {
+                if (roleName.getIndex() == index) {
+                    return roleName;
+                }
+            }
+            throw new IllegalArgumentException("No enum constant with index: " + index);
+        }
+
     }
 }
