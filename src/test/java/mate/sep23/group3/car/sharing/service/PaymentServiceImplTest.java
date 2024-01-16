@@ -264,7 +264,6 @@ class PaymentServiceImplTest {
     void setCanceledPayment_ValidSessionId_ReturnMessage() {
         String sessionId = "valid session id";
 
-
         String expected = "You can pay in 24 hours";
         String actual = paymentService.setCanceledPayment(sessionId);
 
