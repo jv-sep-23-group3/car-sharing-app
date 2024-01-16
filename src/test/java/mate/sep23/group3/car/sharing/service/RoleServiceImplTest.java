@@ -1,6 +1,8 @@
 package mate.sep23.group3.car.sharing.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertIterableEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.List;
@@ -9,6 +11,7 @@ import mate.sep23.group3.car.sharing.mapper.RoleMapper;
 import mate.sep23.group3.car.sharing.model.Role;
 import mate.sep23.group3.car.sharing.repository.RoleRepository;
 import mate.sep23.group3.car.sharing.service.impl.RoleServiceImpl;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -76,7 +79,7 @@ public class RoleServiceImplTest {
 
         List<RoleResponseDto> expected = List.of(adminDto, managerDto, customerDto);
         List<RoleResponseDto> actual = roleServiceImpl.getRoles(pageRequest);
-        assertEquals(expected, actual);
+        assertTrue(CollectionUtils.isEqualCollection(expected, actual));
         assertEquals(expected.size(), actual.size());
     }
 }

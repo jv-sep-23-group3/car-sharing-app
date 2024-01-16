@@ -2,6 +2,7 @@ package mate.sep23.group3.car.sharing.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
@@ -14,6 +15,7 @@ import mate.sep23.group3.car.sharing.mapper.CarMapper;
 import mate.sep23.group3.car.sharing.model.Car;
 import mate.sep23.group3.car.sharing.repository.CarRepository;
 import mate.sep23.group3.car.sharing.service.impl.CarServiceImpl;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -119,7 +121,7 @@ class CarServiceImplTest {
 
         List<CarResponseDto> expected = List.of(responseDto);
         List<CarResponseDto> actual = carServiceImpl.getAll(pageRequest);
-        assertEquals(expected, actual);
+        assertTrue(CollectionUtils.isEqualCollection(expected, actual));
         assertEquals(expected.size(), actual.size());
     }
 

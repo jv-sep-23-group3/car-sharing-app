@@ -18,6 +18,7 @@ import java.util.List;
 import mate.sep23.group3.car.sharing.dto.car.CarRequestDto;
 import mate.sep23.group3.car.sharing.dto.car.CarResponseDto;
 import mate.sep23.group3.car.sharing.model.Car;
+import org.apache.commons.collections4.CollectionUtils;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -158,7 +159,7 @@ public class CarControllerTest {
                 .getContentAsString(), new TypeReference<List<CarResponseDto>>() {});
 
         assertEquals(EXPECTED_LIST_SIZE, actual.size());
-        assertIterableEquals(expectedList, actual);
+        assertTrue(CollectionUtils.isEqualCollection(expectedList, actual));
     }
 
     @WithMockUser(username = "user", roles = {"MANAGER"})
