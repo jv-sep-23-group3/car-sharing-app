@@ -19,10 +19,10 @@ import org.hibernate.type.SqlTypes;
 @Data
 @NoArgsConstructor
 @Entity
-@Accessors(chain = true)
 @SQLDelete(sql = "UPDATE cars SET is_deleted = true WHERE id=?")
 @Where(clause = "is_deleted=false")
 @Table(name = "cars")
+@Accessors(chain = true)
 public class Car {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
