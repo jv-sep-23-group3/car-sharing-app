@@ -39,11 +39,11 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
-@Sql(scripts = {"classpath:database/users/add-user-to-users-table.sql",
-        "classpath:database/users_roles/add-users-roles-to-users-roles-table.sql"},
+@Sql(scripts = {"classpath:database/users/add-users-to-users-table.sql",
+        "classpath:database/users/roles/add-users-roles-to-users-roles-table.sql"},
         executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
-@Sql(scripts = {"classpath:database/users_roles/delete-users-roles-from-users-roles-table.sql",
-        "classpath:database/users/delete-user-from-users-table.sql"},
+@Sql(scripts = {"classpath:database/users/roles/delete-users-roles-from-users-roles-table.sql",
+        "classpath:database/users/delete-users-from-users-table.sql"},
         executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 @Import(ControllerTestConfig.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)

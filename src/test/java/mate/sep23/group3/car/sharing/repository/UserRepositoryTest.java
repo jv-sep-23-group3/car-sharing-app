@@ -42,12 +42,12 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("Find user by email")
     @Sql(scripts = {
-            "classpath:database/users/add-user-to-users-table.sql",
-            "classpath:database/users_roles/add-users-roles-to-users-roles-table.sql"
+            "classpath:database/users/add-users-to-users-table.sql",
+            "classpath:database/users/roles/add-users-roles-to-users-roles-table.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
-            "classpath:database/users_roles/delete-users-roles-from-users-roles-table.sql",
-            "classpath:database/users/delete-user-from-users-table.sql"
+            "classpath:database/users/roles/delete-users-roles-from-users-roles-table.sql",
+            "classpath:database/users/delete-users-from-users-table.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findByEmail_ExistingEmail_ReturnUser() {
 
@@ -60,12 +60,12 @@ public class UserRepositoryTest {
     @Test
     @DisplayName("Find user by not existing email")
     @Sql(scripts = {
-            "classpath:database/users/add-user-to-users-table.sql",
-            "classpath:database/users_roles/add-users-roles-to-users-roles-table.sql"
+            "classpath:database/users/add-users-to-users-table.sql",
+            "classpath:database/users/roles/add-users-roles-to-users-roles-table.sql"
     }, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = {
-            "classpath:database/users_roles/delete-users-roles-from-users-roles-table.sql",
-            "classpath:database/users/delete-user-from-users-table.sql"
+            "classpath:database/users/roles/delete-users-roles-from-users-roles-table.sql",
+            "classpath:database/users/delete-users-from-users-table.sql"
     }, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
     void findByEmail_NotExistingEmail_ReturnEmptyOptional() {
         Optional<User> actual = userRepository.findByEmail(NOT_EXISTING_EMAIL);
