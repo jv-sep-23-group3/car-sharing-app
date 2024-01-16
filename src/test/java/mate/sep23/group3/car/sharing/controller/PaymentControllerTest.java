@@ -189,24 +189,18 @@ class PaymentControllerTest {
 
     @WithUserDetails(CUSTOMER)
     @Test
-    @DisplayName("Check successful payment")
+    @DisplayName("Check successful payment with invalid session id")
     @Sql(scripts = "classpath:database/payments/add-payment-for-success-endpoint.sql",
             executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
     @Sql(scripts = "classpath:database/payments/delete-payment-for-success-endpoint.sql",
             executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
-    void checkSuccessfulPayment_ValidSessionId_ReturnMessage() throws Exception {
+    void checkSuccessfulPayment_InvalidSessionId_ReturnMessage() throws Exception {
         String sessionId = "fourth_id";
 
-        MvcResult mvcResult = mockMvc.perform(
+        mockMvc.perform(
                 get("/payments/success")
                         .param("sessionId", sessionId))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String expected = "Payment was successful";
-        String actual = mvcResult.getResponse().getContentAsString();
-
-        Assertions.assertEquals(expected, actual);
+                .andExpect(status().isBadRequest());
     }
 
     @WithUserDetails(CUSTOMER)

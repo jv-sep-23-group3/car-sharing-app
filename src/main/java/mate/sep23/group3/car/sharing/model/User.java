@@ -28,10 +28,10 @@ import org.springframework.security.core.userdetails.UserDetails;
 @SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted=false")
 @Data
-@Accessors(chain = true)
 @NoArgsConstructor
 @ToString(exclude = {"roles"})
 @EqualsAndHashCode(exclude = {"roles"})
+@Accessors(chain = true)
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

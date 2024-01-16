@@ -43,14 +43,15 @@ public class PaymentServiceImpl implements PaymentService {
             = "http://localhost:8088/api/payments/success?sessionId={CHECKOUT_SESSION_ID}";
     private static final String CANCEL_URL_TEMPLATE
             = "http://localhost:8088/api/payments/cancel?sessionId={CHECKOUT_SESSION_ID}";
-    private static final String USER_NOTIFICATION_TEMPLATE
-            = "You have successfully paid to rent a %s.";
     private static final String SUCCESSFUL_PAYMENT = "Payment was successful";
+    private static final String UNSUCCESSFUL_PAYMENT = "Payment was denied";
     private static final String CANCELED_PAYMENT = "You can pay in 24 hours";
     private static final String USER_EXCEPTION_MESSAGE = "Can't get user with id: ";
     private static final String ROLE_EXCEPTION_MESSAGE = "User doesn't have any roles";
     private static final String RENTAL_EXCEPTION_MESSAGE = "Can't get rental with id: ";
     private static final String PAYMENT_EXCEPTION_MESSAGE = "Can't get payment with session id: ";
+    private static final String PAYMENT_STATUS_CHECKING_EXCEPTION
+            = "Can't get data from session with id: ";
     private static final String SESSION_EXCEPTION_MESSAGE = "Can't create session";
     private final PaymentFactory paymentFactory;
     private final RoleFactory roleFactory;
@@ -116,24 +117,33 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findBySessionId(sessionId).orElseThrow(
                 () -> new EntityNotFoundException(PAYMENT_EXCEPTION_MESSAGE + sessionId)
         );
+      
+        try {
+            Session session = Session.retrieve(payment.getSessionId());
 
-        payment.setStatus(Payment.Status.PAID);
-        paymentRepository.save(payment);
+            if (session.getPaymentStatus().equals("paid")) {
+                payment.setStatus(Payment.Status.PAID);
+                paymentRepository.save(payment);
 
-        Rental rental = payment.getRental();
-        Car car = rental.getCar();
+                Rental rental = payment.getRental();
 
-        notificationService.sendNotification(
-                rental.getUser().getChatId(),
-                formatMessage(rental)
-        );
+                sendNotifications(
+                        rental.getUser().getChatId(),
+                        rental
+                );
 
-        notificationService.sendNotification(
-                adminChatId,
-                formatMessage(rental)
-        );
+                sendNotifications(
+                        adminChatId,
+                        rental
+                );
 
-        return SUCCESSFUL_PAYMENT;
+                return SUCCESSFUL_PAYMENT;
+            }
+        } catch (StripeException e) {
+            throw new StripeProcessingException(PAYMENT_STATUS_CHECKING_EXCEPTION + sessionId, e);
+        }
+
+        return UNSUCCESSFUL_PAYMENT;
     }
 
     @Override
@@ -197,6 +207,13 @@ public class PaymentServiceImpl implements PaymentService {
                 .setDescription(description)
                 .setTaxCode(CAR_RENT_TAX_CODE)
                 .build();
+    }
+
+    private void sendNotifications(Long chatId, Rental rental) {
+        notificationService.sendNotification(
+                chatId,
+                formatMessage(rental)
+        );
     }
 
     private String formatMessage(Rental rental) {
