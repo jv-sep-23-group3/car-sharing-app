@@ -148,13 +148,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     public String setCanceledPayment(String sessionId) {
-        Payment payment = paymentRepository.findBySessionId(sessionId).orElseThrow(
-                () -> new EntityNotFoundException(PAYMENT_EXCEPTION_MESSAGE + sessionId)
-        );
-
-        payment.setStatus(Payment.Status.CANCELED);
-        paymentRepository.save(payment);
-
         return CANCELED_PAYMENT;
     }
 
