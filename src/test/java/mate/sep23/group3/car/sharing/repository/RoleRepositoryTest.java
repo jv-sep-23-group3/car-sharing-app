@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 public class RoleRepositoryTest {
 
     @Autowired
-    RoleRepository roleRepository;
+    private RoleRepository roleRepository;
 
     @Test
     @DisplayName("Find role by role name")

@@ -17,6 +17,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
 import org.springframework.security.core.GrantedAuthority;
@@ -27,6 +28,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @SQLDelete(sql = "UPDATE books SET is_deleted = true WHERE id=?")
 @SQLRestriction("is_deleted=false")
 @Data
+@Accessors(chain = true)
 @NoArgsConstructor
 @ToString(exclude = {"roles"})
 @EqualsAndHashCode(exclude = {"roles"})

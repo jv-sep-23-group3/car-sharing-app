@@ -68,7 +68,7 @@ public class UserController {
     }
 
     @PreAuthorize("hasAnyRole('ADMIN', 'MANAGER', 'CUSTOMER')")
-    @Operation(summary = "Update email", description = "Update password for your account")
+    @Operation(summary = "Update email", description = "Update email for your account")
     @PutMapping("/update-email")
     UserUpdateEmailResponseDto updateEmail(
             Authentication authentication,
