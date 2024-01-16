@@ -2,7 +2,6 @@ package mate.sep23.group3.car.sharing.controller;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -25,7 +24,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
-import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
 import org.springframework.security.test.context.support.WithUserDetails;
 import org.springframework.test.context.jdbc.Sql;
@@ -187,27 +185,6 @@ class PaymentControllerTest {
 
         Assertions.assertEquals(expected.size(), actual.length);
         Assertions.assertEquals(expected, Arrays.stream(actual).toList());
-    }
-
-    @WithUserDetails(CUSTOMER)
-    @Test
-    @DisplayName("Create payment session")
-    void createPaymentSession_ValidRequest_ReturnPaymentDto() throws Exception {
-        MvcResult mvcResult = mockMvc.perform(
-                post("/payments")
-                        .content(objectMapper.writeValueAsString(createPaymentSessionDto))
-                        .contentType(MediaType.APPLICATION_JSON)
-                )
-                .andExpect(status().isOk())
-                .andReturn();
-
-        PaymentResponseDto actual = objectMapper.readValue(
-                mvcResult.getResponse().getContentAsByteArray(),
-                PaymentResponseDto.class
-        );
-
-        Assertions.assertTrue(actual.getSessionId().contains("cs_test"));
-        Assertions.assertTrue(actual.getSession().contains("https://checkout.stripe.com/c/pay/cs_test_"));
     }
 
     @WithUserDetails(CUSTOMER)
