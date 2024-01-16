@@ -1,4 +1,4 @@
-package mate.sep23.group3.car.sharing.dto.user;
+package mate.sep23.group3.car.sharing.dto.user.login;
 
 import jakarta.validation.constraints.NotBlank;
 import org.hibernate.validator.constraints.Length;

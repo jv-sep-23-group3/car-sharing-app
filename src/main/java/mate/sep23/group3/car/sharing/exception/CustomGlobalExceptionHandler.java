@@ -48,19 +48,19 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     @ExceptionHandler({RegistrationException.class, RentalReturnException.class,
             StripeProcessingException.class})
     protected ResponseEntity<Object> handleExceptionRegistrationException(
-            RegistrationException ex) {
+            Exception ex) {
         return buildErrorResponse(HttpStatus.BAD_REQUEST, ex);
     }
 
     @ExceptionHandler({UnauthorizedOperationException.class})
     protected ResponseEntity<Object> handleUnauthorizedOperationException(
-            UnauthorizedOperationException ex) {
+            Exception ex) {
         return buildErrorResponse(HttpStatus.NETWORK_AUTHENTICATION_REQUIRED, ex);
     }
 
     @ExceptionHandler({PendingPaymentExistsException.class})
     protected ResponseEntity<Object> handleConflictException(
-            PendingPaymentExistsException ex) {
+            Exception ex) {
         return buildErrorResponse(HttpStatus.CONFLICT, ex);
     }
 
@@ -76,7 +76,7 @@ public class CustomGlobalExceptionHandler extends ResponseEntityExceptionHandler
     private ResponseEntity<Object> buildErrorResponse(HttpStatus status, Exception exception) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", LocalDateTime.now());
-        body.put("status", HttpStatus.NOT_FOUND);
+        body.put("status", status);
         body.put("message", exception.getMessage());
         return new ResponseEntity<>(body, status);
     }
