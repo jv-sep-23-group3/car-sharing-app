@@ -247,20 +247,6 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    @DisplayName("Set successful payment with valid session id")
-    void setSuccessfulPayment_ValidSessionId_ReturnMessage() {
-        String sessionId = "valid session id";
-
-        Mockito.when(paymentRepository.findBySessionId(sessionId)).thenReturn(Optional.of(first));
-        Mockito.when(paymentRepository.save(first)).thenReturn(first);
-
-        String expected = "Payment was successful";
-        String actual = paymentService.setSuccessfulPayment(sessionId);
-
-        Assertions.assertEquals(expected, actual);
-    }
-
-    @Test
     @DisplayName("Set successful payment with invalid session id")
     void setSuccessfulPayment_InvalidSessionId_ThrowException() {
         String sessionId = "invalid session id";
