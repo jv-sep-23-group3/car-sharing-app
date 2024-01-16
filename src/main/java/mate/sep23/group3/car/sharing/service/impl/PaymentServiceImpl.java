@@ -64,7 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
     private String apiKey;
 
     @Value("${admin.chat.id}")
-    private String adminChatId;
+    private Long adminChatId;
 
     @PostConstruct
     public void init() {
@@ -123,13 +123,16 @@ public class PaymentServiceImpl implements PaymentService {
         Rental rental = payment.getRental();
         Car car = rental.getCar();
 
-        String carName = String.format("%s %s", car.getBrand(), car.getModel());
-
         notificationService.sendNotification(
                 rental.getUser().getChatId(),
-                String.format(USER_NOTIFICATION_TEMPLATE, carName));
-        notificationService.sendNotification(Long.parseLong(adminChatId),
-                formatMessage(rental));
+                formatMessage(rental)
+        );
+
+        notificationService.sendNotification(
+                adminChatId,
+                formatMessage(rental)
+        );
+
         return SUCCESSFUL_PAYMENT;
     }
 
@@ -153,7 +156,6 @@ public class PaymentServiceImpl implements PaymentService {
                 .setCancelUrl(CANCEL_URL_TEMPLATE)
                 .addLineItem(createLineItem(amount, car))
                 .setMode(SessionCreateParams.Mode.PAYMENT)
-                .setExpiresAt((System.currentTimeMillis() / 1000) + (24 * 60 * 60))
                 .build();
 
         try {
