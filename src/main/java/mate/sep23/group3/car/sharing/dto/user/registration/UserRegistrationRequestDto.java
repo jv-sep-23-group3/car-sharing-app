@@ -3,10 +3,12 @@ package mate.sep23.group3.car.sharing.dto.user.registration;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import mate.sep23.group3.car.sharing.validation.FieldMatchRegistration;
 import org.hibernate.validator.constraints.Length;
 
 @Data
+@Accessors(chain = true)
 @FieldMatchRegistration
 public class UserRegistrationRequestDto {
     private static final String NOT_BE_NULL = "Can't be null";

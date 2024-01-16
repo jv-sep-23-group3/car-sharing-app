@@ -117,7 +117,7 @@ public class PaymentServiceImpl implements PaymentService {
         Payment payment = paymentRepository.findBySessionId(sessionId).orElseThrow(
                 () -> new EntityNotFoundException(PAYMENT_EXCEPTION_MESSAGE + sessionId)
         );
-
+      
         try {
             Session session = Session.retrieve(payment.getSessionId());
 
