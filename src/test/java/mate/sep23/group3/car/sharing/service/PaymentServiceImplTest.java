@@ -23,6 +23,7 @@ import mate.sep23.group3.car.sharing.strategy.payment.handlers.roles.RoleFactory
 import org.apache.commons.lang3.builder.EqualsBuilder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -233,6 +234,20 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    @DisplayName("Create payment session with invalid data")
+    void createPaymentSession_InvalidRentalId_ThrowException() {
+        Long rentalId = 1L;
+
+        Mockito.when(rentalRepository.findById(rentalId)).thenReturn(Optional.empty());
+
+        Assertions.assertThrows(
+                EntityNotFoundException.class,
+                () -> paymentService.createPaymentSession(createPaymentSessionDto)
+        );
+    }
+
+    @Test
+    @DisplayName("Set successful payment with valid session id")
     void setSuccessfulPayment_ValidSessionId_ReturnMessage() {
         String sessionId = "valid session id";
 
@@ -246,6 +261,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    @DisplayName("Set successful payment with invalid session id")
     void setSuccessfulPayment_InvalidSessionId_ThrowException() {
         String sessionId = "invalid session id";
 
@@ -258,6 +274,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    @DisplayName("Set canceled payment with valid session id")
     void setCanceledPayment_ValidSessionId_ReturnMessage() {
         String sessionId = "valid session id";
 
@@ -271,6 +288,7 @@ class PaymentServiceImplTest {
     }
 
     @Test
+    @DisplayName("Set canceled payment with invalid session id")
     void setCanceledPayment_InvalidSessionId_ThrowException() {
         String sessionId = "invalid session id";
 

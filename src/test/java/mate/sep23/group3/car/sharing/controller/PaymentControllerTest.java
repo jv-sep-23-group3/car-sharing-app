@@ -2,6 +2,7 @@ package mate.sep23.group3.car.sharing.controller;
 
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -11,26 +12,23 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Set;
 import javax.sql.DataSource;
 import lombok.SneakyThrows;
+import mate.sep23.group3.car.sharing.dto.payment.PaymentRequestDto;
 import mate.sep23.group3.car.sharing.dto.payment.PaymentResponseDto;
 import mate.sep23.group3.car.sharing.model.Payment;
-import mate.sep23.group3.car.sharing.model.Role;
-import mate.sep23.group3.car.sharing.model.User;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.http.MediaType;
 import org.springframework.jdbc.datasource.init.ScriptUtils;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.security.test.context.support.WithUserDetails;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -39,6 +37,9 @@ import org.springframework.web.context.WebApplicationContext;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class PaymentControllerTest {
     protected static MockMvc mockMvc;
+    private static final String CUSTOMER = "customer1@email.com";
+    private static final String MANAGER = "manager@email.com";
+    private static PaymentRequestDto createPaymentSessionDto;
     private static PaymentResponseDto first;
     private static PaymentResponseDto second;
     private static PaymentResponseDto third;
@@ -81,6 +82,10 @@ class PaymentControllerTest {
                     new ClassPathResource("database/payments/add-payments-to-payments-table.sql")
             );
         }
+
+        createPaymentSessionDto = new PaymentRequestDto()
+                .setRentalId(1L)
+                .setType(Payment.Type.PAYMENT);
 
         first = new PaymentResponseDto()
                 .setId(1L)
@@ -144,26 +149,9 @@ class PaymentControllerTest {
         }
     }
 
-    @BeforeEach
-    void setUp() {
-        Role role = new Role()
-                .setId(1L)
-                .setRoleName(Role.RoleName.MANAGER);
-
-        User user = new User()
-                .setId(2L)
-                .setEmail("manager@mail.com")
-                .setPassword("$2a$10$yCASXP59HTCOdYDPCt3W7.dBNYpo/o99j2ywUg6jGhYLoFaRp.k.G")
-                .setRoles(Set.of(role));
-
-        Authentication authentication = new UsernamePasswordAuthenticationToken(
-                user, user.getPassword(), user.getAuthorities()
-        );
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-    }
-
-    @WithMockUser(username = "Manager", roles = {"MANAGER"})
+    @WithUserDetails(MANAGER)
     @Test
+    @DisplayName("Get all payments for manager")
     void getAllForManager_ValidRequest_Success() throws Exception {
         MvcResult mvcResult = mockMvc.perform(
                 get("/payments")
@@ -179,5 +167,91 @@ class PaymentControllerTest {
 
         Assertions.assertEquals(expected.size(), actual.length);
         Assertions.assertEquals(expected, Arrays.stream(actual).toList());
+    }
+
+    @WithUserDetails(CUSTOMER)
+    @Test
+    @DisplayName("Get all payments for customer")
+    void getAllForCustomer_ValidRequest_Success() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/payments")
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        List<PaymentResponseDto> expected = List.of(first, second);
+        PaymentResponseDto[] actual = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsByteArray(),
+                PaymentResponseDto[].class
+        );
+
+        Assertions.assertEquals(expected.size(), actual.length);
+        Assertions.assertEquals(expected, Arrays.stream(actual).toList());
+    }
+
+    @WithUserDetails(CUSTOMER)
+    @Test
+    @DisplayName("Create payment session")
+    void createPaymentSession_ValidRequest_ReturnPaymentDto() throws Exception {
+        MvcResult mvcResult = mockMvc.perform(
+                post("/payments")
+                        .content(objectMapper.writeValueAsString(createPaymentSessionDto))
+                        .contentType(MediaType.APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        PaymentResponseDto actual = objectMapper.readValue(
+                mvcResult.getResponse().getContentAsByteArray(),
+                PaymentResponseDto.class
+        );
+
+        Assertions.assertTrue(actual.getSessionId().contains("cs_test"));
+        Assertions.assertTrue(actual.getSession().contains("https://checkout.stripe.com/c/pay/cs_test_"));
+    }
+
+    @WithUserDetails(CUSTOMER)
+    @Test
+    @DisplayName("Check successful payment")
+    @Sql(scripts = "classpath:database/payments/add-payment-for-success-endpoint.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/payments/delete-payment-for-success-endpoint.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void checkSuccessfulPayment_ValidSessionId_ReturnMessage() throws Exception {
+        String sessionId = "fourth_id";
+
+        MvcResult mvcResult = mockMvc.perform(
+                get("/payments/success")
+                        .param("sessionId", sessionId))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String expected = "Payment was successful";
+        String actual = mvcResult.getResponse().getContentAsString();
+
+        Assertions.assertEquals(expected, actual);
+    }
+
+    @WithUserDetails(CUSTOMER)
+    @Test
+    @DisplayName("Check canceled payment")
+    @Sql(scripts = "classpath:database/payments/add-payment-for-cancel-endpoint.sql",
+            executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+    @Sql(scripts = "classpath:database/payments/delete-payment-for-cancel-endpoint.sql",
+            executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
+    void pausePayment_ValidSessionId_ReturnMessage() throws Exception {
+        String sessionId = "fifth_id";
+
+        MvcResult mvcResult = mockMvc.perform(
+                        get("/payments/cancel")
+                                .param("sessionId", sessionId)
+                )
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String expected = "You can pay in 24 hours";
+        String actual = mvcResult.getResponse().getContentAsString();
+
+        Assertions.assertEquals(expected, actual);
     }
 }
