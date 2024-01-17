@@ -1,6 +1,7 @@
 package mate.sep23.group3.car.sharing.service.impl;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 public class RentalServiceImpl implements RentalService {
+    private static final int ADD_MINUTES_TO_RETURN_DATE = 30;
     private static final String CAN_NOT_FIND_RENTAL_BY_ID_MESSAGE =
             "Can't find rental by ID: ";
     private static final String CAN_NOT_FIND_CAR_BY_ID_MESSAGE =
@@ -116,7 +118,9 @@ public class RentalServiceImpl implements RentalService {
         if (carInventory > 0) {
             Rental rental = new Rental();
             rental.setRentalDate(LocalDateTime.now());
-            rental.setReturnDate(requestDto.getReturnDate());
+            rental.setReturnDate(requestDto.getReturnDate().with(LocalTime.of(
+                    rental.getRentalDate().getHour(),
+                    rental.getRentalDate().getMinute()).plusMinutes(ADD_MINUTES_TO_RETURN_DATE)));
             car.setInventory(carInventory - 1);
             rental.setCar(car);
 
