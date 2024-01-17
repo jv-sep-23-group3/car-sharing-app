@@ -153,7 +153,7 @@ List the prerequisites required to run your application. Include things like:
     - Or clone from the console with the command: `git clone https://github.com/jv-sep-23-group3/car-sharing-app`
 2. Build project and download dependencies for Maven with command: `mvn clean install`
 3. Docker Compose your project: `docker compose build` and `docker compose up`
-4. If you want to test the API, you can [download](postman/CarSharingAPI.postman_collection.json) our Postman collection. You can either [download the local version](https://www.postman.com/downloads/) or use the Postman [web version](https://www.postman.com/)
+4. If you want to test the API, you can [download](https://github.com/jv-sep-23-group3/car-sharing-app/blob/main/postman/CarSharingAPI.postman_collection.json) our Postman collection. You can either [download the local version](https://www.postman.com/downloads/) or use the Postman [web version](https://www.postman.com/)
 
 
 ## 💪Challenges
