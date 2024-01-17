@@ -47,9 +47,13 @@ public class OverdueRentalsNotification {
                         .append(System.lineSeparator()).append(message)
                         .append(System.lineSeparator()).append(System.lineSeparator());
                 telegramBot.sendMessage(rental.getUser().getChatId(), message);
+            } else {
+                telegramBot.sendMessage(adminChatId, "There are no overdue "
+                        + "rentals on the moment!");
+                return;
             }
-
         }
+
         telegramBot.sendMessage(adminChatId, messageForManagers.toString());
     }
 }
